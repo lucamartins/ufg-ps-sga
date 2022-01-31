@@ -1,4 +1,7 @@
-# PS-ES-2021-2-SGA (Sistema de informação de academia de natação e musculação)
+# PS-ES-2021-2-SGA
+
+## Sobre
+Sistema de informação de academia de natação e musculação.
 
 ## Integrantes
 - Amadeu Lee
