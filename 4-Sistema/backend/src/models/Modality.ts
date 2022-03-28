@@ -13,7 +13,7 @@ const ModalitySchema = new Schema<IModality>({
   },
   active: {
     type: Types.Boolean,
-    default: true,
+    required: true,
   },
 });
 

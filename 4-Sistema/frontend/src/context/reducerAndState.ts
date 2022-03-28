@@ -20,6 +20,13 @@ import {
   REGISTER_USER_BEGIN,
   REGISTER_USER_ERROR,
   REGISTER_USER_SUCCESS,
+  OPERATION_BEGIN,
+  ADD_NEW_MODALITY_SUCCESS,
+  ADD_NEW_MODALITY_ERROR,
+  GET_MODALITIES_ERROR,
+  GET_MODALITIES_SUCCESS,
+  UPDATE_MODALITY_ERROR,
+  UPDATE_MODALITY_SUCCESS,
 } from './actions';
 
 export const initialState: IAppContextState = {
@@ -29,9 +36,17 @@ export const initialState: IAppContextState = {
   alertText: '',
   alertType: 'success',
   customers: [],
+  modalities: [],
 };
 
 export const reducer = (state, action) => {
+  if (action.type === OPERATION_BEGIN) {
+    return {
+      ...state,
+      isLoading: true,
+    };
+  }
+
   if (action.type === SHOW_ALERT) {
     return {
       ...state,
@@ -165,6 +180,66 @@ export const reducer = (state, action) => {
   }
 
   if (action.type === REGISTER_USER_ERROR) {
+    return {
+      ...state,
+      isLoading: false,
+      alertText: action.payload.alertText,
+      alertType: 'error',
+      showAlert: true,
+    };
+  }
+
+  if (action.type === ADD_NEW_MODALITY_SUCCESS) {
+    return {
+      ...state,
+      isLoading: false,
+      alertText: 'Modalidade criada',
+      alertType: 'success',
+      showAlert: true,
+      modalities: [...state.modalities, action.payload.modality],
+    };
+  }
+
+  if (action.type === ADD_NEW_MODALITY_ERROR) {
+    return {
+      ...state,
+      isLoading: false,
+      alertText: action.payload.alertText,
+      alertType: 'error',
+      showAlert: true,
+    };
+  }
+
+  if (action.type === GET_MODALITIES_SUCCESS) {
+    return {
+      ...state,
+      isLoading: false,
+      modalities: [...action.payload.modalities],
+    };
+  }
+
+  if (action.type === GET_MODALITIES_ERROR) {
+    return {
+      ...state,
+      isLoading: false,
+      alertText: action.payload.alertText,
+      alertType: 'error',
+      showAlert: true,
+    };
+  }
+
+  if (action.type === UPDATE_MODALITY_SUCCESS) {
+    const newArr = state.modalities.filter((modality) => modality._id !== action.payload.modality._id);
+    newArr.push(action.payload.modality);
+
+    return {
+      ...state,
+      isLoading: false,
+      modalities: [...newArr],
+    };
+  }
+
+  if (action.type === UPDATE_MODALITY_ERROR) {
     return {
       ...state,
       isLoading: false,

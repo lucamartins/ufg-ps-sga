@@ -7,6 +7,7 @@ export interface IAppContextState {
   alertText: string;
   alertType: 'success' | 'error';
   customers: ICustomer[];
+  modalities: { name: string; active: boolean; _id: string }[];
 }
 
 export interface IAppContextFunctions {
@@ -18,6 +19,9 @@ export interface IAppContextFunctions {
   verifyAuth: () => Promise<void>;
   logoutUser: () => Promise<void>;
   registerUser: (user) => Promise<void>;
+  addModality: (modality: { name: string; active: boolean }) => Promise<void>;
+  getModalities: () => Promise<void>;
+  updateModality: (newModality: { name: string; active: boolean }, id: string) => Promise<void>;
 }
 
 export interface IAppContext extends IAppContextState, IAppContextFunctions {}

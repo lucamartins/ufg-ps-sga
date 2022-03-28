@@ -23,6 +23,13 @@ import {
   REGISTER_USER_BEGIN,
   REGISTER_USER_ERROR,
   REGISTER_USER_SUCCESS,
+  OPERATION_BEGIN,
+  ADD_NEW_MODALITY_ERROR,
+  ADD_NEW_MODALITY_SUCCESS,
+  GET_MODALITIES_ERROR,
+  GET_MODALITIES_SUCCESS,
+  UPDATE_MODALITY_ERROR,
+  UPDATE_MODALITY_SUCCESS,
 } from './actions';
 import { initialState, reducer } from './reducerAndState';
 
@@ -150,6 +157,45 @@ const AppProvider = ({ children }) => {
     }
   };
 
+  const addModality = async (newModality: { name: string; active: boolean }) => {
+    dispatch({ type: OPERATION_BEGIN });
+
+    try {
+      const res = await axiosInstance.post('/modalities', newModality);
+      const { modality } = res.data;
+      dispatch({ type: ADD_NEW_MODALITY_SUCCESS, payload: { modality } });
+    } catch (err) {
+      const errMsg = err.response?.data.message || 'Não foi possível criar modalidade';
+      dispatch({ type: ADD_NEW_MODALITY_ERROR, payload: { alertText: errMsg } });
+    }
+  };
+
+  const getModalities = async () => {
+    dispatch({ type: OPERATION_BEGIN });
+
+    try {
+      const res = await axiosInstance.get('/modalities');
+      const { modalities } = res.data;
+      dispatch({ type: GET_MODALITIES_SUCCESS, payload: { modalities } });
+    } catch (err) {
+      const errMsg = err.response?.data.message || 'Não foi possível obter modalidades';
+      dispatch({ type: GET_MODALITIES_ERROR, payload: { alertText: errMsg } });
+    }
+  };
+
+  const updateModality = async (newModality: { name: string; active: boolean }, id: string) => {
+    dispatch({ type: OPERATION_BEGIN });
+
+    try {
+      const res = await axiosInstance.patch(`/modalities/${id}`, newModality);
+      const { modality } = res.data;
+      dispatch({ type: UPDATE_MODALITY_SUCCESS, payload: { modality } });
+    } catch (err) {
+      const errMsg = err.response?.data.message || 'Não foi possível editar modalidade';
+      dispatch({ type: UPDATE_MODALITY_ERROR, payload: { alertText: errMsg } });
+    }
+  };
+
   const publicFunctions: IAppContextFunctions = {
     displayAlert,
     clearAlertNoDelay,
@@ -159,6 +205,9 @@ const AppProvider = ({ children }) => {
     verifyAuth,
     logoutUser,
     registerUser,
+    addModality,
+    getModalities,
+    updateModality,
   };
 
   return <AppContext.Provider value={{ ...state, ...publicFunctions }}>{children}</AppContext.Provider>;
