@@ -4,25 +4,19 @@ import { API_URL } from '../config/variables';
 import { IAppContext, IAppContextFunctions } from '../types';
 import {
   CLEAR_ALERT,
-  CREATE_CUSTOMER_BEGIN,
   CREATE_CUSTOMER_ERROR,
   CREATE_CUSTOMER_SUCCESS,
-  GET_CUSTOMERS_BEGIN,
   GET_CUSTOMERS_ERROR,
   GET_CUSTOMERS_SUCCESS,
-  LOGIN_USER_BEGIN,
   LOGIN_USER_ERROR,
   LOGIN_USER_SUCCESS,
   SHOW_ALERT,
-  VERIFY_AUTH_BEGIN,
   VERIFY_AUTH_SUCCESS,
   VERIFY_AUTH_ERROR,
-  LOGOUT_USER_BEGIN,
   LOGOUT_USER_ERROR,
   LOGOUT_USER_SUCCESS,
-  REGISTER_USER_BEGIN,
-  REGISTER_USER_ERROR,
-  REGISTER_USER_SUCCESS,
+  REGISTER_CUSTOMER_ERROR,
+  REGISTER_CUSTOMER_SUCCESS,
   OPERATION_BEGIN,
   ADD_NEW_MODALITY_ERROR,
   ADD_NEW_MODALITY_SUCCESS,
@@ -62,6 +56,10 @@ const AppProvider = ({ children }) => {
     }, 4000);
   }, [state.showAlert]);
 
+  //
+  // PUBLIC FUNCTIONS
+  //
+
   const displayAlert = (alertText, alertType) => {
     dispatch({ type: SHOW_ALERT, payload: { alertText, alertType } });
   };
@@ -70,8 +68,10 @@ const AppProvider = ({ children }) => {
     dispatch({ type: CLEAR_ALERT });
   };
 
+  // CUSTOMERS
+
   const createCustomer = async (userData: { name: string; email: string; phoneNumber: string }): Promise<void> => {
-    dispatch({ type: CREATE_CUSTOMER_BEGIN });
+    dispatch({ type: OPERATION_BEGIN });
 
     try {
       const res = await axiosInstance({
@@ -88,7 +88,7 @@ const AppProvider = ({ children }) => {
   };
 
   const getCustomers = async () => {
-    dispatch({ type: GET_CUSTOMERS_BEGIN });
+    dispatch({ type: OPERATION_BEGIN });
 
     try {
       const res = await axiosInstance({
@@ -105,8 +105,24 @@ const AppProvider = ({ children }) => {
     }
   };
 
+  const registerUser = async (user: { name: string; email: string; password: string }) => {
+    dispatch({ type: OPERATION_BEGIN });
+
+    try {
+      const createdUser = await axiosInstance.post('/customers', user);
+      dispatch({ type: REGISTER_CUSTOMER_SUCCESS, payload: { createdUser, alertText: 'Usuário criado com sucesso' } });
+      await loginUser({ email: user.email, password: user.password });
+    } catch (err) {
+      console.error(err);
+      dispatch({ type: REGISTER_CUSTOMER_ERROR, payload: { alertText: err.response.data.message } });
+      throw new Error('err.message');
+    }
+  };
+
+  // AUTH
+
   const loginUser = async ({ email, password }) => {
-    dispatch({ type: LOGIN_USER_BEGIN });
+    dispatch({ type: OPERATION_BEGIN });
 
     try {
       const res = await axiosInstance.post('/auth/login', { email, password });
@@ -120,7 +136,7 @@ const AppProvider = ({ children }) => {
   };
 
   const verifyAuth = async () => {
-    dispatch({ type: VERIFY_AUTH_BEGIN });
+    dispatch({ type: OPERATION_BEGIN });
 
     try {
       const res = await axiosInstance.get('/auth');
@@ -133,7 +149,7 @@ const AppProvider = ({ children }) => {
   };
 
   const logoutUser = async () => {
-    dispatch({ type: LOGOUT_USER_BEGIN });
+    dispatch({ type: OPERATION_BEGIN });
 
     try {
       await axiosInstance.delete('/auth/logout');
@@ -145,19 +161,7 @@ const AppProvider = ({ children }) => {
     }
   };
 
-  const registerUser = async (user: { name: string; email: string; password: string }) => {
-    dispatch({ type: REGISTER_USER_BEGIN });
-
-    try {
-      const createdUser = await axiosInstance.post('/customers', user);
-      dispatch({ type: REGISTER_USER_SUCCESS, payload: { createdUser, alertText: 'Usuário criado com sucesso' } });
-      await loginUser({ email: user.email, password: user.password });
-    } catch (err) {
-      console.error(err);
-      dispatch({ type: REGISTER_USER_ERROR, payload: { alertText: err.response.data.message } });
-      throw new Error('err.message');
-    }
-  };
+  // MODALITIES
 
   const addModality = async (newModality: { name: string; active: boolean }) => {
     dispatch({ type: OPERATION_BEGIN });
@@ -209,6 +213,8 @@ const AppProvider = ({ children }) => {
       dispatch({ type: DELETE_MODALITY_ERROR, payload: { alertText: errMsg } });
     }
   };
+
+  // PLANS
 
   const publicFunctions: IAppContextFunctions = {
     displayAlert,

@@ -2,24 +2,16 @@ import { IAppContextState } from '../types';
 import {
   SHOW_ALERT,
   CLEAR_ALERT,
-  GET_CUSTOMERS_BEGIN,
   GET_CUSTOMERS_SUCCESS,
   GET_CUSTOMERS_ERROR,
-  CREATE_CUSTOMER_BEGIN,
-  CREATE_CUSTOMER_SUCCESS,
-  CREATE_CUSTOMER_ERROR,
-  LOGIN_USER_BEGIN,
   LOGIN_USER_ERROR,
   LOGIN_USER_SUCCESS,
-  VERIFY_AUTH_BEGIN,
   VERIFY_AUTH_SUCCESS,
   VERIFY_AUTH_ERROR,
-  LOGOUT_USER_BEGIN,
   LOGOUT_USER_ERROR,
   LOGOUT_USER_SUCCESS,
-  REGISTER_USER_BEGIN,
-  REGISTER_USER_ERROR,
-  REGISTER_USER_SUCCESS,
+  REGISTER_CUSTOMER_ERROR,
+  REGISTER_CUSTOMER_SUCCESS,
   OPERATION_BEGIN,
   ADD_NEW_MODALITY_SUCCESS,
   ADD_NEW_MODALITY_ERROR,
@@ -42,6 +34,8 @@ export const initialState: IAppContextState = {
 };
 
 export const reducer = (state, action) => {
+  // Gerais
+
   if (action.type === OPERATION_BEGIN) {
     return {
       ...state,
@@ -65,43 +59,38 @@ export const reducer = (state, action) => {
     };
   }
 
-  if (action.type === GET_CUSTOMERS_BEGIN) {
-    return { ...state, isLoading: true };
-  }
+  // Clientes
 
   if (action.type === GET_CUSTOMERS_SUCCESS) {
     return { ...state, isLoading: false, customers: action.payload.customers };
-  }
-
-  if (action.type === CREATE_CUSTOMER_BEGIN) {
-    return { ...state, isLoading: true };
   }
 
   if (action.type === GET_CUSTOMERS_ERROR) {
     return { ...state, isLoading: false, alertText: action.payload.alertText, alertType: 'error', showAlert: true };
   }
 
-  if (action.type === CREATE_CUSTOMER_SUCCESS) {
+  if (action.type === REGISTER_CUSTOMER_SUCCESS) {
     return {
       ...state,
       isLoading: false,
-      customers: [...state.customers, action.payload.newCustomer],
+      user: { userId: action.payload.createdUser._id, userRole: action.payload.createdUser.__t },
       alertText: action.payload.alertText,
       alertType: 'success',
       showAlert: true,
     };
   }
 
-  if (action.type === CREATE_CUSTOMER_ERROR) {
-    return { ...state, isLoading: false, alertText: action.payload.alertText, alertType: 'error', showAlert: true };
-  }
-
-  if (action.type === LOGIN_USER_BEGIN) {
+  if (action.type === REGISTER_CUSTOMER_ERROR) {
     return {
       ...state,
-      isLoading: true,
+      isLoading: false,
+      alertText: action.payload.alertText,
+      alertType: 'error',
+      showAlert: true,
     };
   }
+
+  // Autenticacao
 
   if (action.type === LOGIN_USER_SUCCESS) {
     const { userId, userRole } = action.payload;
@@ -126,13 +115,6 @@ export const reducer = (state, action) => {
     };
   }
 
-  if (action.type === LOGOUT_USER_BEGIN) {
-    return {
-      ...state,
-      isLoading: true,
-    };
-  }
-
   if (action.type === LOGOUT_USER_SUCCESS) {
     return {
       ...state,
@@ -154,10 +136,6 @@ export const reducer = (state, action) => {
     };
   }
 
-  if (action.type === VERIFY_AUTH_BEGIN) {
-    return { ...state, isLoading: true };
-  }
-
   if (action.type === VERIFY_AUTH_SUCCESS) {
     return { ...state, isLoading: false, user: { userId: action.payload.userId, userRole: action.payload.userRole } };
   }
@@ -166,30 +144,7 @@ export const reducer = (state, action) => {
     return { ...state, isLoading: false, user: null };
   }
 
-  if (action.type === REGISTER_USER_BEGIN) {
-    return { ...state, isLoading: true };
-  }
-
-  if (action.type === REGISTER_USER_SUCCESS) {
-    return {
-      ...state,
-      isLoading: false,
-      user: { userId: action.payload.createdUser._id, userRole: action.payload.createdUser.__t },
-      alertText: action.payload.alertText,
-      alertType: 'success',
-      showAlert: true,
-    };
-  }
-
-  if (action.type === REGISTER_USER_ERROR) {
-    return {
-      ...state,
-      isLoading: false,
-      alertText: action.payload.alertText,
-      alertType: 'error',
-      showAlert: true,
-    };
-  }
+  // Modalidades
 
   if (action.type === ADD_NEW_MODALITY_SUCCESS) {
     return {
@@ -273,4 +228,6 @@ export const reducer = (state, action) => {
       showAlert: true,
     };
   }
+
+  // Planos
 };
