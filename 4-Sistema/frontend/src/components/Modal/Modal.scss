@@ -1,0 +1,58 @@
+@import '../../sass/export';
+
+@keyframes scale {
+  0% {
+    transform: scale(0);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.overlay {
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  position: fixed;
+  background-color: rgba(#000, 0.6);
+  display: flex;
+  flex-flow: column wrap;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+}
+
+.mymodal {
+  z-index: 10;
+  border-radius: 6px;
+  animation: scale 0.25s ease-in;
+  background-color: #fff;
+  color: #000;
+  width: 45rem;
+  border-radius: 6px;
+  display: flex;
+  flex-flow: column nowrap;
+  font-size: 1.6rem;
+
+  &__line-separator {
+    height: 1px;
+    width: 100%;
+    background-color: rgba(#000, 0.15);
+  }
+
+  &__title {
+    padding: 2rem;
+    font-weight: 700;
+    font-size: 1.7rem;
+  }
+
+  &__action {
+    padding: 2rem;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-end;
+    gap: 1rem;
+  }
+}

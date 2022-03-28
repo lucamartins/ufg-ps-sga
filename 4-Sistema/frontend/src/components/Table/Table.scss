@@ -1,0 +1,89 @@
+@import '../../sass/export';
+
+.table {
+  width: 100%;
+  margin: 2rem 0;
+  padding: 0.5rem 1rem;
+  border-collapse: separate;
+  border-spacing: 0;
+  display: table;
+
+  &__head {
+    font-size: 1.2rem;
+    color: rgba(#fff, 0.7);
+    font-weight: bold;
+
+    &__row {
+      &__th {
+        background-color: transparent;
+        text-transform: uppercase;
+        text-align: left;
+        padding: 1rem;
+      }
+    }
+  }
+
+  &__body {
+    font-size: 1.4rem;
+    background-color: rgba(#fff, 0.16);
+    min-width: 100%;
+
+    &__row {
+      cursor: pointer;
+      transition: all 0.3s;
+
+      &:hover {
+        background-color: rgba(#fff, 0.17);
+      }
+
+      &:not(:first-child, :last-child) {
+        td {
+          border-bottom: solid 1px rgba(#fff, 0.12);
+          border-top: solid 1px rgba(#fff, 0.12);
+        }
+      }
+
+      &:first-child {
+        border-top-right-radius: 8px;
+        border-top-left-radius: 8px;
+
+        td {
+          &:first-child {
+            border-top-left-radius: 8px;
+          }
+
+          &:last-child {
+            border-top-right-radius: 8px;
+          }
+        }
+      }
+
+      &:last-child {
+        border-bottom-right-radius: 8px;
+        border-bottom-left-radius: 8px;
+
+        td {
+          &:first-child {
+            border-bottom-left-radius: 8px;
+          }
+
+          &:last-child {
+            border-bottom-right-radius: 8px;
+          }
+        }
+      }
+
+      &__td {
+        padding: 1rem;
+
+        &:first-child {
+          min-width: 10rem;
+        }
+
+        &:nth-child(2) {
+          min-width: 15rem;
+        }
+      }
+    }
+  }
+}

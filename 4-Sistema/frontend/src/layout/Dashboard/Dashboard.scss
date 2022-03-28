@@ -1,0 +1,15 @@
+@import '../../sass/export';
+
+.dashboard {
+  &__nav {
+    position: fixed;
+    height: 100vh;
+    width: 25rem;
+    padding: 2rem;
+  }
+
+  &__rendered {
+    padding: 2rem;
+    margin-left: 25rem;
+  }
+}

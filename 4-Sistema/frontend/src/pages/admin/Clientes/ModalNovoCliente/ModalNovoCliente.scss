@@ -1,0 +1,45 @@
+@import '../../../../sass/export';
+
+.novo-aluno {
+  padding: 2rem;
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+
+  &__header {
+    font-size: 1.6rem;
+    font-weight: 600;
+  }
+
+  &__field {
+    display: flex;
+    flex-flow: column;
+    gap: 0.5rem;
+
+    &__label {
+      font-size: 1.3rem;
+      color: rgba(#000, 0.8);
+      font-weight: 600;
+    }
+
+    input {
+      padding: 0.5rem 0.75rem;
+      border-radius: 7px;
+      border: none;
+      box-shadow: 0 0 0 1px rgba(#000, 0.3);
+      min-height: 2.6rem;
+      transition: all 0.3s;
+
+      &:focus {
+        border: none;
+        box-shadow: 0 0 0 3px rgba($custom-blue, 0.75);
+        outline: none;
+      }
+    }
+  }
+}
+
+.input-incorrect-value {
+  box-shadow: 0 0 0 1px rgba(red, 0.3) inset !important;
+}

@@ -1,0 +1,28 @@
+@import '../../sass/export';
+
+.search {
+  background-color: rgba(#fff, 0.16);
+  border: solid 1px #fff;
+  border-radius: 10px;
+  border: none;
+  padding: 0.4rem 1rem;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  gap: 1rem;
+
+  &__icon {
+    font-size: 1.6rem;
+  }
+
+  &__input {
+    color: #fff;
+    background-color: transparent;
+    border: none;
+    width: 30rem;
+
+    &:focus {
+      outline: none;
+    }
+  }
+}

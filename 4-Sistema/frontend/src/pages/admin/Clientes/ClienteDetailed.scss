@@ -1,0 +1,87 @@
+@import '../../../sass/export';
+
+.client-detailed {
+}
+
+.client {
+  margin-top: 4rem;
+  display: flex;
+  flex-flow: column wrap;
+  align-items: center;
+  gap: 2rem;
+
+  &__info {
+    align-self: center;
+    display: flex;
+    flex-flow: column wrap;
+    gap: 1.5rem;
+    background-color: rgba($main-purple--1, 0.75);
+    border-radius: 10px;
+    padding: 3rem;
+
+    &__header {
+      &__title {
+        font-size: 2.2rem;
+        font-weight: 600;
+      }
+    }
+
+    &__content {
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: flex-start;
+      font-size: 1.4rem;
+      color: rgba(#fff, 0.75);
+      gap: 4rem;
+
+      &__box-1 {
+        display: flex;
+        flex-flow: column nowrap;
+        justify-content: center;
+        gap: 0.5rem;
+
+        &__label {
+          font-weight: 500;
+          color: rgba($custom-turquoise, 0.8);
+        }
+      }
+
+      &__line-separator {
+        width: 1px;
+        background-color: rgba(#fff, 0.15);
+        margin: 0 2rem;
+      }
+
+      &__box-2 {
+        &__label {
+          font-weight: 500;
+          color: rgba($custom-turquoise, 0.8);
+        }
+      }
+
+      &__actions {
+        display: flex;
+        flex-flow: column nowrap;
+        justify-content: center;
+        gap: 1rem;
+      }
+    }
+  }
+
+  &__contracts {
+    align-self: stretch;
+    background-color: rgba(#fff, 0.05);
+    border-radius: 10px;
+    min-height: 100vh;
+    padding: 4rem;
+
+    &__header {
+      display: flex;
+      justify-content: flex-start;
+
+      &__title {
+        font-size: 2.6rem;
+      }
+    }
+  }
+}

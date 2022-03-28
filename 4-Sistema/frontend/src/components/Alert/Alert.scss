@@ -1,0 +1,40 @@
+@import '../../sass/export';
+
+.alert {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 1.5rem;
+  padding: 1rem 1.25rem;
+  background-color: rgba(#fff, 1);
+  border-radius: 2rem;
+  gap: 1rem;
+  box-shadow: 0 1rem 2rem rgba(#000, 0.3);
+  color: $main-purple--1;
+
+  &--success {
+    color: green;
+  }
+
+  &--error {
+    color: red;
+  }
+
+  &__icon {
+    font-size: 1.8rem;
+  }
+
+  &__text {
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  &__close-btn {
+    // color: #000;
+    font-size: 1.8rem;
+    cursor: pointer;
+  }
+}

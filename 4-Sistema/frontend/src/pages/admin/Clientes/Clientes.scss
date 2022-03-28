@@ -1,0 +1,14 @@
+@import '../../../sass/export';
+
+.alunos {
+  &__menu {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+  }
+
+  &__title {
+    font-size: 2.2rem;
+    font-weight: 700;
+  }
+}
