@@ -50,7 +50,7 @@ const start = async () => {
       try {
         await addAdm();
       } catch (err) {
-        console.log('Adm já inserido. Credencias de acesso para teste: lucamartins@discente.ufg.br luca.martins.adm');
+        console.log('ADMs já inseridos');
       }
     });
   } catch (err) {

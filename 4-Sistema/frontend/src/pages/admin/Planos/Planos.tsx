@@ -131,10 +131,17 @@ export const Planos = () => {
               <Form.Control type='text' value={planInfo.name} name='name' onChange={handleChange}></Form.Control>
               <Form.Text muted={true}>Nome curto e de fácil identificação.</Form.Text>
             </Form.Group>
+
             <Form.Group controlId='formActive'>
               <Form.Check type='switch' label='Ativa' name='active' checked={planInfo.active} onChange={handleChange} />
-              <Form.Text muted={true}>Define se o plano pode ser associada a planos da academia.</Form.Text>
+              <Form.Text muted={true}>Define se o plano está atualmente sendo ofertado</Form.Text>
             </Form.Group>
+            
+            <Form.Group controlId='formLessonsWeek'>
+              <Form.Label>Número de aulas por semana</Form.Label>
+              
+            </Form.Group>
+
           </Form>
         </Modal.Body>
         <Modal.Footer>
