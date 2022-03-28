@@ -10,7 +10,7 @@ export const Modalidades = () => {
   const [newModalityInfo, setNewModalityInfo] = useState({ name: '', active: true });
   const [modalTitle, setModalTitle] = useState('Cadastrar nova modalidade');
   const [triggerUpdate, setTriggerUpdate] = useState({ active: false, id: '' });
-  const { modalities, getModalities, addModality, updateModality } = useAppContext();
+  const { modalities, getModalities, addModality, updateModality, deleteModality } = useAppContext();
 
   useEffect(() => {
     (async () => {
@@ -32,24 +32,6 @@ export const Modalidades = () => {
       setNewModalityInfo({ name: '', active: true });
     }
   }, [showModal]);
-
-  const item = (modality: { name: string; active: boolean; _id: string }) => (
-    <ListGroup.Item variant='primary' key={uuidv4()}>
-      <Container>
-        <Row className='p-1'>
-          <Col className='d-flex align-items-center'>{modality.name}</Col>
-          <Col className='d-flex align-items-center' style={modality.active ? { color: 'green' } : { color: 'red' }}>
-            {modality.active ? 'Ativa' : 'Inativa'}
-          </Col>
-          <Col className='d-flex justify-content-end'>
-            <Button variant='outline-dark' size='lg' data-modality-id={modality._id} onClick={handleEdit}>
-              Editar
-            </Button>
-          </Col>
-        </Row>
-      </Container>
-    </ListGroup.Item>
-  );
 
   const handleEdit = (e) => {
     const modalityId = e.target.dataset.modalityId;
@@ -84,6 +66,37 @@ export const Modalidades = () => {
 
     setShowModal(false);
   };
+
+  const handleDelete = async (e) => {
+    const modalityId = e.target.dataset.modalityId;
+
+    try {
+      await deleteModality(modalityId);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const item = (modality: { name: string; active: boolean; _id: string }) => (
+    <ListGroup.Item variant='primary' key={uuidv4()}>
+      <Container>
+        <Row className='p-1'>
+          <Col className='d-flex align-items-center'>{modality.name}</Col>
+          <Col className='d-flex align-items-center' style={modality.active ? { color: 'green' } : { color: 'red' }}>
+            {modality.active ? 'Ativa' : 'Inativa'}
+          </Col>
+          <Col className='d-flex justify-content-end'>
+            <Button variant='outline-danger' size='lg' data-modality-id={modality._id} onClick={handleDelete} className='me-2'>
+              Excluir
+            </Button>
+            <Button variant='dark' size='lg' data-modality-id={modality._id} onClick={handleEdit}>
+              Editar
+            </Button>
+          </Col>
+        </Row>
+      </Container>
+    </ListGroup.Item>
+  );
 
   return (
     <Container>

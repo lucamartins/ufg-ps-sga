@@ -30,6 +30,8 @@ import {
   GET_MODALITIES_SUCCESS,
   UPDATE_MODALITY_ERROR,
   UPDATE_MODALITY_SUCCESS,
+  DELETE_MODALITY_SUCCESS,
+  DELETE_MODALITY_ERROR,
 } from './actions';
 import { initialState, reducer } from './reducerAndState';
 
@@ -196,6 +198,18 @@ const AppProvider = ({ children }) => {
     }
   };
 
+  const deleteModality = async (id: string) => {
+    dispatch({ type: OPERATION_BEGIN });
+
+    try {
+      await axiosInstance.delete(`/modalities/${id}`);
+      dispatch({ type: DELETE_MODALITY_SUCCESS, payload: { id } });
+    } catch (err) {
+      const errMsg = err.response?.data.message || 'Não foi possível excluir modalidade';
+      dispatch({ type: DELETE_MODALITY_ERROR, payload: { alertText: errMsg } });
+    }
+  };
+
   const publicFunctions: IAppContextFunctions = {
     displayAlert,
     clearAlertNoDelay,
@@ -208,6 +222,7 @@ const AppProvider = ({ children }) => {
     addModality,
     getModalities,
     updateModality,
+    deleteModality,
   };
 
   return <AppContext.Provider value={{ ...state, ...publicFunctions }}>{children}</AppContext.Provider>;

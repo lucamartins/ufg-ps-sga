@@ -22,6 +22,7 @@ export interface IAppContextFunctions {
   addModality: (modality: { name: string; active: boolean }) => Promise<void>;
   getModalities: () => Promise<void>;
   updateModality: (newModality: { name: string; active: boolean }, id: string) => Promise<void>;
+  deleteModality: (id: string) => Promise<void>;
 }
 
 export interface IAppContext extends IAppContextState, IAppContextFunctions {}

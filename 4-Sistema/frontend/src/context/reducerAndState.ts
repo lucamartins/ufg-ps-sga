@@ -27,6 +27,8 @@ import {
   GET_MODALITIES_SUCCESS,
   UPDATE_MODALITY_ERROR,
   UPDATE_MODALITY_SUCCESS,
+  DELETE_MODALITY_SUCCESS,
+  DELETE_MODALITY_ERROR,
 } from './actions';
 
 export const initialState: IAppContextState = {
@@ -240,6 +242,29 @@ export const reducer = (state, action) => {
   }
 
   if (action.type === UPDATE_MODALITY_ERROR) {
+    return {
+      ...state,
+      isLoading: false,
+      alertText: action.payload.alertText,
+      alertType: 'error',
+      showAlert: true,
+    };
+  }
+
+  if (action.type === DELETE_MODALITY_SUCCESS) {
+    const newArr = state.modalities.filter((modality) => modality._id !== action.payload.id);
+
+    return {
+      ...state,
+      isLoading: false,
+      alertText: 'Modalidade excluída',
+      alertType: 'success',
+      showAlert: true,
+      modalities: [...newArr],
+    };
+  }
+
+  if (action.type === DELETE_MODALITY_ERROR) {
     return {
       ...state,
       isLoading: false,
