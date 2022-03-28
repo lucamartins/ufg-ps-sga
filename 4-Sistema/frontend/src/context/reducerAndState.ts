@@ -1,27 +1,5 @@
 import { IAppContextState } from '../types';
-import {
-  SHOW_ALERT,
-  CLEAR_ALERT,
-  GET_CUSTOMERS_SUCCESS,
-  GET_CUSTOMERS_ERROR,
-  LOGIN_USER_ERROR,
-  LOGIN_USER_SUCCESS,
-  VERIFY_AUTH_SUCCESS,
-  VERIFY_AUTH_ERROR,
-  LOGOUT_USER_ERROR,
-  LOGOUT_USER_SUCCESS,
-  REGISTER_CUSTOMER_ERROR,
-  REGISTER_CUSTOMER_SUCCESS,
-  OPERATION_BEGIN,
-  ADD_NEW_MODALITY_SUCCESS,
-  ADD_NEW_MODALITY_ERROR,
-  GET_MODALITIES_ERROR,
-  GET_MODALITIES_SUCCESS,
-  UPDATE_MODALITY_ERROR,
-  UPDATE_MODALITY_SUCCESS,
-  DELETE_MODALITY_SUCCESS,
-  DELETE_MODALITY_ERROR,
-} from './actions';
+import actions from './actions';
 
 export const initialState: IAppContextState = {
   user: null,
@@ -31,19 +9,20 @@ export const initialState: IAppContextState = {
   alertType: 'success',
   customers: [],
   modalities: [],
+  plans: [],
 };
 
 export const reducer = (state, action) => {
   // Gerais
 
-  if (action.type === OPERATION_BEGIN) {
+  if (action.type === actions.OPERATION_BEGIN) {
     return {
       ...state,
       isLoading: true,
     };
   }
 
-  if (action.type === SHOW_ALERT) {
+  if (action.type === actions.SHOW_ALERT) {
     return {
       ...state,
       showAlert: true,
@@ -52,7 +31,7 @@ export const reducer = (state, action) => {
     };
   }
 
-  if (action.type === CLEAR_ALERT) {
+  if (action.type === actions.CLEAR_ALERT) {
     return {
       ...state,
       showAlert: false,
@@ -61,15 +40,15 @@ export const reducer = (state, action) => {
 
   // Clientes
 
-  if (action.type === GET_CUSTOMERS_SUCCESS) {
+  if (action.type === actions.GET_CUSTOMERS_SUCCESS) {
     return { ...state, isLoading: false, customers: action.payload.customers };
   }
 
-  if (action.type === GET_CUSTOMERS_ERROR) {
+  if (action.type === actions.GET_CUSTOMERS_ERROR) {
     return { ...state, isLoading: false, alertText: action.payload.alertText, alertType: 'error', showAlert: true };
   }
 
-  if (action.type === REGISTER_CUSTOMER_SUCCESS) {
+  if (action.type === actions.REGISTER_CUSTOMER_SUCCESS) {
     return {
       ...state,
       isLoading: false,
@@ -80,7 +59,7 @@ export const reducer = (state, action) => {
     };
   }
 
-  if (action.type === REGISTER_CUSTOMER_ERROR) {
+  if (action.type === actions.REGISTER_CUSTOMER_ERROR) {
     return {
       ...state,
       isLoading: false,
@@ -92,7 +71,7 @@ export const reducer = (state, action) => {
 
   // Autenticacao
 
-  if (action.type === LOGIN_USER_SUCCESS) {
+  if (action.type === actions.LOGIN_USER_SUCCESS) {
     const { userId, userRole } = action.payload;
 
     return {
@@ -105,7 +84,7 @@ export const reducer = (state, action) => {
     };
   }
 
-  if (action.type === LOGIN_USER_ERROR) {
+  if (action.type === actions.LOGIN_USER_ERROR) {
     return {
       ...state,
       isLoading: false,
@@ -115,18 +94,15 @@ export const reducer = (state, action) => {
     };
   }
 
-  if (action.type === LOGOUT_USER_SUCCESS) {
+  if (action.type === actions.LOGOUT_USER_SUCCESS) {
     return {
-      ...state,
-      isLoading: false,
+      ...initialState,
       alertText: action.payload.alertText,
-      alertType: 'success',
       showAlert: true,
-      user: null,
     };
   }
 
-  if (action.type === LOGOUT_USER_ERROR) {
+  if (action.type === actions.LOGOUT_USER_ERROR) {
     return {
       ...state,
       isLoading: false,
@@ -136,17 +112,17 @@ export const reducer = (state, action) => {
     };
   }
 
-  if (action.type === VERIFY_AUTH_SUCCESS) {
+  if (action.type === actions.VERIFY_AUTH_SUCCESS) {
     return { ...state, isLoading: false, user: { userId: action.payload.userId, userRole: action.payload.userRole } };
   }
 
-  if (action.type === VERIFY_AUTH_ERROR) {
+  if (action.type === actions.VERIFY_AUTH_ERROR) {
     return { ...state, isLoading: false, user: null };
   }
 
   // Modalidades
 
-  if (action.type === ADD_NEW_MODALITY_SUCCESS) {
+  if (action.type === actions.ADD_NEW_MODALITY_SUCCESS) {
     return {
       ...state,
       isLoading: false,
@@ -157,7 +133,7 @@ export const reducer = (state, action) => {
     };
   }
 
-  if (action.type === ADD_NEW_MODALITY_ERROR) {
+  if (action.type === actions.ADD_NEW_MODALITY_ERROR) {
     return {
       ...state,
       isLoading: false,
@@ -167,7 +143,7 @@ export const reducer = (state, action) => {
     };
   }
 
-  if (action.type === GET_MODALITIES_SUCCESS) {
+  if (action.type === actions.GET_MODALITIES_SUCCESS) {
     return {
       ...state,
       isLoading: false,
@@ -175,7 +151,7 @@ export const reducer = (state, action) => {
     };
   }
 
-  if (action.type === GET_MODALITIES_ERROR) {
+  if (action.type === actions.GET_MODALITIES_ERROR) {
     return {
       ...state,
       isLoading: false,
@@ -185,7 +161,7 @@ export const reducer = (state, action) => {
     };
   }
 
-  if (action.type === UPDATE_MODALITY_SUCCESS) {
+  if (action.type === actions.UPDATE_MODALITY_SUCCESS) {
     const newArr = state.modalities.filter((modality) => modality._id !== action.payload.modality._id);
     newArr.push(action.payload.modality);
 
@@ -196,7 +172,7 @@ export const reducer = (state, action) => {
     };
   }
 
-  if (action.type === UPDATE_MODALITY_ERROR) {
+  if (action.type === actions.UPDATE_MODALITY_ERROR) {
     return {
       ...state,
       isLoading: false,
@@ -206,7 +182,7 @@ export const reducer = (state, action) => {
     };
   }
 
-  if (action.type === DELETE_MODALITY_SUCCESS) {
+  if (action.type === actions.DELETE_MODALITY_SUCCESS) {
     const newArr = state.modalities.filter((modality) => modality._id !== action.payload.id);
 
     return {
@@ -219,7 +195,7 @@ export const reducer = (state, action) => {
     };
   }
 
-  if (action.type === DELETE_MODALITY_ERROR) {
+  if (action.type === actions.DELETE_MODALITY_ERROR) {
     return {
       ...state,
       isLoading: false,
@@ -230,4 +206,87 @@ export const reducer = (state, action) => {
   }
 
   // Planos
+
+  if (action.type === actions.ADD_NEW_PLAN_SUCCESS) {
+    return {
+      ...state,
+      isLoading: false,
+      alertText: 'Plano criado',
+      alertType: 'success',
+      showAlert: true,
+      plans: [...state.plans, action.payload.plan],
+    };
+  }
+
+  if (action.type === actions.ADD_NEW_PLAN_ERROR) {
+    return {
+      ...state,
+      isLoading: false,
+      alertText: action.payload.alertText,
+      alertType: 'error',
+      showAlert: true,
+    };
+  }
+
+  if (action.type === actions.GET_PLANS_SUCCESS) {
+    return {
+      ...state,
+      isLoading: false,
+      plans: [...action.payload.plans],
+    };
+  }
+
+  if (action.type === actions.GET_PLANS_ERROR) {
+    return {
+      ...state,
+      isLoading: false,
+      alertText: action.payload.alertText,
+      alertType: 'error',
+      showAlert: true,
+    };
+  }
+
+  if (action.type === actions.UPDATE_PLAN_SUCCESS) {
+    const newArr = state.plans.filter((plan) => plan._id !== action.payload.plan._id);
+    newArr.push(action.payload.plan);
+
+    return {
+      ...state,
+      isLoading: false,
+      plans: [...newArr],
+    };
+  }
+
+  if (action.type === actions.UPDATE_PLAN_ERROR) {
+    return {
+      ...state,
+      isLoading: false,
+      alertText: action.payload.alertText,
+      alertType: 'error',
+      showAlert: true,
+    };
+  }
+
+  if (action.type === actions.DELETE_PLAN_SUCCESS) {
+    const newArr = state.plans.filter((plan) => plan._id !== action.payload.id);
+
+    return {
+      ...state,
+      isLoading: false,
+      alertText: 'Plano excluído',
+      alertType: 'success',
+      showAlert: true,
+      plans: [...newArr],
+    };
+  }
+
+  if (action.type === actions.DELETE_PLAN_ERROR) {
+    return {
+      ...state,
+      isLoading: false,
+      alertText: action.payload.alertText,
+      alertType: 'error',
+      showAlert: true,
+    };
+  }
 };

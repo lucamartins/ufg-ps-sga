@@ -29,7 +29,7 @@ export const ModalNovoCliente = ({ showModal, closeModal }) => {
   const nameInputEl = useRef(null);
   const emailInputEl = useRef(null);
   const whatsappInputEl = useRef(null);
-  const { createCustomer, displayAlert } = useAppContext();
+  const { registerUser, displayAlert } = useAppContext();
 
   // Clear input after closing modal
   useEffect(() => {
@@ -59,7 +59,7 @@ export const ModalNovoCliente = ({ showModal, closeModal }) => {
     }
 
     try {
-      await createCustomer({ name: input.nome, email: input.email, phoneNumber: input.whatsapp });
+      await registerUser({ name: input.nome, email: input.email, phoneNumber: input.whatsapp });
       closeModal();
       displayAlert('Cliente criado com sucesso!', 'success');
       return;

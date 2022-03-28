@@ -1,15 +1,8 @@
-export interface IConsumerFiliate {
-  _id: string;
-  name: string;
-  birthday: Date;
-}
-
 export interface ICustomer {
-  _id: string;
+  _id?: string;
+  __t?: string;
   name: string;
   email: string;
   phoneNumber: string;
-  memberships: string[];
-  stripeId: string;
-  filiates: IConsumerFiliate[];
+  contracts: string[];
 }

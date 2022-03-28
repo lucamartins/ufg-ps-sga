@@ -1,44 +1,46 @@
 import React, { useState, useEffect } from 'react';
 import { ListGroup, Container, Row, Col, Button, Modal, Form } from 'react-bootstrap';
-import './Modalidades.scss';
 import { useAppContext } from '../../../context';
 import { v4 as uuidv4 } from 'uuid';
 import { Alert, Loading } from '../../../components';
+import { IPlan } from '../../../types';
 
-export const Modalidades = () => {
+const planInfoInitialState: IPlan = {
+  _id: null,
+  name: '',
+  active: true,
+  modality: '',
+  numberLessonsWeek: 2,
+  monthPrice: '',
+  numberMonths: 1,
+};
+
+export const Planos = () => {
   const [showModal, setShowModal] = useState(false);
-  const [newModalityInfo, setNewModalityInfo] = useState({ name: '', active: true });
-  const [modalTitle, setModalTitle] = useState('Cadastrar nova modalidade');
-  const [triggerUpdate, setTriggerUpdate] = useState({ active: false, id: '' });
-  const { modalities, getModalities, addModality, updateModality, deleteModality } = useAppContext();
+  const [planInfo, setPlanInfo] = useState(planInfoInitialState);
+  const [modalTitle, setModalTitle] = useState('Cadastrar novo plano');
+
+  const { plans, getPlans, addPlan, updatePlan, deletePlan } = useAppContext();
 
   useEffect(() => {
     (async () => {
-      await getModalities();
+      await getPlans();
     })();
   }, []);
 
   useEffect(() => {
-    if (triggerUpdate.active) {
-      setModalTitle('Editar modalidade');
-    } else {
-      setModalTitle('Cadastrar nova modalidade');
-    }
-  }, [triggerUpdate]);
-
-  useEffect(() => {
     if (!showModal) {
-      setTriggerUpdate({ active: false, id: '' });
-      setNewModalityInfo({ name: '', active: true });
+      setModalTitle('Cadastrar novo plano');
+      setPlanInfo(planInfoInitialState);
     }
   }, [showModal]);
 
   const handleEdit = (e) => {
-    const modalityId = e.target.dataset.modalityId;
-    const modality = modalities.find((modality) => modality._id === modalityId);
+    const planId = e.target.dataset.planId;
+    const plan = plans.find((plan) => plan._id === planId);
 
-    setTriggerUpdate({ active: true, id: modalityId });
-    setNewModalityInfo({ name: modality.name, active: modality.active });
+    setModalTitle('Editar plano');
+    setPlanInfo({ ...plan });
     setShowModal(true);
   };
 
@@ -47,7 +49,7 @@ export const Modalidades = () => {
     const value = target.type === 'checkbox' ? target.checked : target.value;
     const name = target.name;
 
-    setNewModalityInfo((oldState) => ({
+    setPlanInfo((oldState) => ({
       ...oldState,
       [name]: value,
     }));
@@ -55,10 +57,10 @@ export const Modalidades = () => {
 
   const handleSave = async () => {
     try {
-      if (triggerUpdate.active) {
-        await updateModality(newModalityInfo, triggerUpdate.id);
+      if (planInfo._id) {
+        await updatePlan(planInfo);
       } else {
-        await addModality(newModalityInfo);
+        await addPlan(planInfo);
       }
     } catch (err) {
       console.error(err);
@@ -68,28 +70,28 @@ export const Modalidades = () => {
   };
 
   const handleDelete = async (e) => {
-    const modalityId = e.target.dataset.modalityId;
+    const planId = e.target.dataset.planId;
 
     try {
-      await deleteModality(modalityId);
+      await deletePlan(planId);
     } catch (err) {
       console.error(err);
     }
   };
 
-  const item = (modality: { name: string; active: boolean; _id?: string }) => (
+  const item = (plan: IPlan) => (
     <ListGroup.Item variant='primary' key={uuidv4()}>
       <Container>
         <Row className='p-1'>
-          <Col className='d-flex align-items-center'>{modality.name}</Col>
-          <Col className='d-flex align-items-center' style={modality.active ? { color: 'green' } : { color: 'red' }}>
-            {modality.active ? 'Ativa' : 'Inativa'}
+          <Col className='d-flex align-items-center'>{plan.name}</Col>
+          <Col className='d-flex align-items-center' style={plan.active ? { color: 'green' } : { color: 'red' }}>
+            {plan.active ? 'Ativo' : 'Inativo'}
           </Col>
           <Col className='d-flex justify-content-end'>
-            <Button variant='outline-danger' size='lg' data-modality-id={modality._id} onClick={handleDelete} className='me-2'>
+            <Button variant='outline-danger' size='lg' data-modality-id={plan._id} onClick={handleDelete} className='me-2'>
               Excluir
             </Button>
-            <Button variant='dark' size='lg' data-modality-id={modality._id} onClick={handleEdit}>
+            <Button variant='dark' size='lg' data-modality-id={plan._id} onClick={handleEdit}>
               Editar
             </Button>
           </Col>
@@ -102,20 +104,18 @@ export const Modalidades = () => {
     <Container>
       <Container className=''>
         <div className='' style={{ fontSize: '2.6rem' }}>
-          Modalidades
+          Planos
         </div>
       </Container>
 
       <Container className='my-4'>
-        <ListGroup numbered={true}>
-          {modalities.length === 0 ? 'Não há modalidades cadastradas.' : modalities.map((modality) => item(modality))}
-        </ListGroup>
+        <ListGroup numbered={true}>{plans.length === 0 ? 'Não há planos cadastrados.' : plans.map((plan) => item(plan))}</ListGroup>
       </Container>
 
       <Container className=''>
         <div className='d-flex justify-content-end'>
           <Button variant='primary' size='lg' onClick={() => setShowModal(true)}>
-            Nova modalidade
+            Novo plano
           </Button>
         </div>
       </Container>
@@ -128,12 +128,12 @@ export const Modalidades = () => {
           <Form className='p-2' onSubmit={(e) => e.preventDefault()}>
             <Form.Group className='mb-3' controlId='formName'>
               <Form.Label>Nome</Form.Label>
-              <Form.Control type='text' value={newModalityInfo.name} name='name' onChange={handleChange}></Form.Control>
+              <Form.Control type='text' value={planInfo.name} name='name' onChange={handleChange}></Form.Control>
               <Form.Text muted={true}>Nome curto e de fácil identificação.</Form.Text>
             </Form.Group>
             <Form.Group controlId='formActive'>
-              <Form.Check type='switch' label='Ativa' name='active' checked={newModalityInfo.active} onChange={handleChange} />
-              <Form.Text muted={true}>Define se a modalidade pode ser associada a planos da academia.</Form.Text>
+              <Form.Check type='switch' label='Ativa' name='active' checked={planInfo.active} onChange={handleChange} />
+              <Form.Text muted={true}>Define se o plano pode ser associada a planos da academia.</Form.Text>
             </Form.Group>
           </Form>
         </Modal.Body>

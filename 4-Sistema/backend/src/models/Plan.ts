@@ -2,9 +2,10 @@ import { Schema, model, Types } from 'mongoose';
 
 interface IPlan {
   name: string;
+  active: boolean;
   modality: Types.ObjectId;
   numberLessonsWeek: number;
-  priceEachMonth: number;
+  monthPrice: number;
   numberMonths: number;
 }
 
@@ -25,7 +26,7 @@ const PlanSchema = new Schema<IPlan>({
     type: Number,
     required: true,
   },
-  priceEachMonth: {
+  monthPrice: {
     type: Number,
     required: true,
   },

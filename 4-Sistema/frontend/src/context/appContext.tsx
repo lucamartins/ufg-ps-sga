@@ -2,32 +2,9 @@ import axios from 'axios';
 import React, { useContext, useEffect, useReducer } from 'react';
 import { API_URL } from '../config/variables';
 import { IAppContext, IAppContextFunctions } from '../types';
-import {
-  CLEAR_ALERT,
-  CREATE_CUSTOMER_ERROR,
-  CREATE_CUSTOMER_SUCCESS,
-  GET_CUSTOMERS_ERROR,
-  GET_CUSTOMERS_SUCCESS,
-  LOGIN_USER_ERROR,
-  LOGIN_USER_SUCCESS,
-  SHOW_ALERT,
-  VERIFY_AUTH_SUCCESS,
-  VERIFY_AUTH_ERROR,
-  LOGOUT_USER_ERROR,
-  LOGOUT_USER_SUCCESS,
-  REGISTER_CUSTOMER_ERROR,
-  REGISTER_CUSTOMER_SUCCESS,
-  OPERATION_BEGIN,
-  ADD_NEW_MODALITY_ERROR,
-  ADD_NEW_MODALITY_SUCCESS,
-  GET_MODALITIES_ERROR,
-  GET_MODALITIES_SUCCESS,
-  UPDATE_MODALITY_ERROR,
-  UPDATE_MODALITY_SUCCESS,
-  DELETE_MODALITY_SUCCESS,
-  DELETE_MODALITY_ERROR,
-} from './actions';
+import actions from './actions';
 import { initialState, reducer } from './reducerAndState';
+import { IPlan } from '../types';
 
 const AppContext = React.createContext<IAppContext>({} as IAppContext);
 
@@ -49,10 +26,13 @@ const AppProvider = ({ children }) => {
     }
   );
 
+  //
   // Auto adjust a timer every time an alert is displayed to clear it
+  //
+
   useEffect(() => {
     setTimeout(() => {
-      if (state.showAlert) dispatch({ type: CLEAR_ALERT });
+      if (state.showAlert) dispatch({ type: actions.CLEAR_ALERT });
     }, 4000);
   }, [state.showAlert]);
 
@@ -61,34 +41,19 @@ const AppProvider = ({ children }) => {
   //
 
   const displayAlert = (alertText, alertType) => {
-    dispatch({ type: SHOW_ALERT, payload: { alertText, alertType } });
+    dispatch({ type: actions.SHOW_ALERT, payload: { alertText, alertType } });
   };
 
   const clearAlertNoDelay = () => {
-    dispatch({ type: CLEAR_ALERT });
+    dispatch({ type: actions.CLEAR_ALERT });
   };
 
+  //
   // CUSTOMERS
-
-  const createCustomer = async (userData: { name: string; email: string; phoneNumber: string }): Promise<void> => {
-    dispatch({ type: OPERATION_BEGIN });
-
-    try {
-      const res = await axiosInstance({
-        method: 'post',
-        url: '/customers',
-        data: { ...userData },
-      });
-
-      dispatch({ type: CREATE_CUSTOMER_SUCCESS, payload: { newCustomer: res.data.customer, alertText: 'Novo cliente criado!' } });
-    } catch (err) {
-      dispatch({ type: CREATE_CUSTOMER_ERROR, payload: { alertText: 'Falha ao criar cliente' } });
-      throw new Error(err.response.data.message);
-    }
-  };
+  //
 
   const getCustomers = async () => {
-    dispatch({ type: OPERATION_BEGIN });
+    dispatch({ type: actions.OPERATION_BEGIN });
 
     try {
       const res = await axiosInstance({
@@ -97,129 +62,185 @@ const AppProvider = ({ children }) => {
       });
 
       setTimeout(() => {
-        dispatch({ type: GET_CUSTOMERS_SUCCESS, payload: res.data });
+        dispatch({ type: actions.GET_CUSTOMERS_SUCCESS, payload: res.data });
       }, 500);
     } catch (err) {
       console.error(err.response);
-      dispatch({ type: GET_CUSTOMERS_ERROR, payload: { alertText: 'Falha ao obter clientes' } });
+      dispatch({ type: actions.GET_CUSTOMERS_ERROR, payload: { alertText: 'Falha ao obter clientes' } });
     }
   };
 
   const registerUser = async (user: { name: string; email: string; password: string }) => {
-    dispatch({ type: OPERATION_BEGIN });
+    dispatch({ type: actions.OPERATION_BEGIN });
 
     try {
       const createdUser = await axiosInstance.post('/customers', user);
-      dispatch({ type: REGISTER_CUSTOMER_SUCCESS, payload: { createdUser, alertText: 'Usuário criado com sucesso' } });
+      dispatch({ type: actions.REGISTER_CUSTOMER_SUCCESS, payload: { createdUser, alertText: 'Usuário criado com sucesso' } });
       await loginUser({ email: user.email, password: user.password });
     } catch (err) {
       console.error(err);
-      dispatch({ type: REGISTER_CUSTOMER_ERROR, payload: { alertText: err.response.data.message } });
+      dispatch({ type: actions.REGISTER_CUSTOMER_ERROR, payload: { alertText: err.response.data.message } });
       throw new Error('err.message');
     }
   };
 
+  //
   // AUTH
+  //
 
   const loginUser = async ({ email, password }) => {
-    dispatch({ type: OPERATION_BEGIN });
+    dispatch({ type: actions.OPERATION_BEGIN });
 
     try {
       const res = await axiosInstance.post('/auth/login', { email, password });
       const { userId, userRole } = res.data;
-      dispatch({ type: LOGIN_USER_SUCCESS, payload: { userId, userRole, alertText: 'Usuário logado com sucesso!' } });
+      dispatch({ type: actions.LOGIN_USER_SUCCESS, payload: { userId, userRole, alertText: 'Usuário logado com sucesso!' } });
     } catch (err) {
       const alertText = err.response.data?.message || 'Tente novamente mais tarde. Estamos passando por problemas no servidor :(';
-      dispatch({ type: LOGIN_USER_ERROR, payload: { alertText } });
+      dispatch({ type: actions.LOGIN_USER_ERROR, payload: { alertText } });
       throw new Error(err);
     }
   };
 
   const verifyAuth = async () => {
-    dispatch({ type: OPERATION_BEGIN });
+    dispatch({ type: actions.OPERATION_BEGIN });
 
     try {
       const res = await axiosInstance.get('/auth');
       const { userId, userRole } = res.data;
       console.log(userId, userRole);
-      dispatch({ type: VERIFY_AUTH_SUCCESS, payload: { userId, userRole } });
+      dispatch({ type: actions.VERIFY_AUTH_SUCCESS, payload: { userId, userRole } });
     } catch (err) {
-      dispatch({ type: VERIFY_AUTH_ERROR });
+      dispatch({ type: actions.VERIFY_AUTH_ERROR });
     }
   };
 
   const logoutUser = async () => {
-    dispatch({ type: OPERATION_BEGIN });
+    dispatch({ type: actions.OPERATION_BEGIN });
 
     try {
       await axiosInstance.delete('/auth/logout');
-      dispatch({ type: LOGOUT_USER_SUCCESS, payload: { alertText: 'Usuário deslogado do sistema' } });
+      dispatch({ type: actions.LOGOUT_USER_SUCCESS, payload: { alertText: 'Usuário deslogado do sistema' } });
     } catch (err) {
       const alertText = err.response.data?.message || 'Tente novamente mais tarde. Estamos passando por problemas no servidor :(';
-      dispatch({ type: LOGOUT_USER_ERROR, payload: { alertText } });
+      dispatch({ type: actions.LOGOUT_USER_ERROR, payload: { alertText } });
       throw new Error(err);
     }
   };
 
+  //
   // MODALITIES
+  //
 
   const addModality = async (newModality: { name: string; active: boolean }) => {
-    dispatch({ type: OPERATION_BEGIN });
+    dispatch({ type: actions.OPERATION_BEGIN });
 
     try {
       const res = await axiosInstance.post('/modalities', newModality);
       const { modality } = res.data;
-      dispatch({ type: ADD_NEW_MODALITY_SUCCESS, payload: { modality } });
+      dispatch({ type: actions.ADD_NEW_MODALITY_SUCCESS, payload: { modality } });
     } catch (err) {
       const errMsg = err.response?.data.message || 'Não foi possível criar modalidade';
-      dispatch({ type: ADD_NEW_MODALITY_ERROR, payload: { alertText: errMsg } });
+      dispatch({ type: actions.ADD_NEW_MODALITY_ERROR, payload: { alertText: errMsg } });
     }
   };
 
   const getModalities = async () => {
-    dispatch({ type: OPERATION_BEGIN });
+    dispatch({ type: actions.OPERATION_BEGIN });
 
     try {
       const res = await axiosInstance.get('/modalities');
       const { modalities } = res.data;
-      dispatch({ type: GET_MODALITIES_SUCCESS, payload: { modalities } });
+      dispatch({ type: actions.GET_MODALITIES_SUCCESS, payload: { modalities } });
     } catch (err) {
       const errMsg = err.response?.data.message || 'Não foi possível obter modalidades';
-      dispatch({ type: GET_MODALITIES_ERROR, payload: { alertText: errMsg } });
+      dispatch({ type: actions.GET_MODALITIES_ERROR, payload: { alertText: errMsg } });
     }
   };
 
   const updateModality = async (newModality: { name: string; active: boolean }, id: string) => {
-    dispatch({ type: OPERATION_BEGIN });
+    dispatch({ type: actions.OPERATION_BEGIN });
 
     try {
       const res = await axiosInstance.patch(`/modalities/${id}`, newModality);
       const { modality } = res.data;
-      dispatch({ type: UPDATE_MODALITY_SUCCESS, payload: { modality } });
+      dispatch({ type: actions.UPDATE_MODALITY_SUCCESS, payload: { modality } });
     } catch (err) {
       const errMsg = err.response?.data.message || 'Não foi possível editar modalidade';
-      dispatch({ type: UPDATE_MODALITY_ERROR, payload: { alertText: errMsg } });
+      dispatch({ type: actions.UPDATE_MODALITY_ERROR, payload: { alertText: errMsg } });
     }
   };
 
   const deleteModality = async (id: string) => {
-    dispatch({ type: OPERATION_BEGIN });
+    dispatch({ type: actions.OPERATION_BEGIN });
 
     try {
       await axiosInstance.delete(`/modalities/${id}`);
-      dispatch({ type: DELETE_MODALITY_SUCCESS, payload: { id } });
+      dispatch({ type: actions.DELETE_MODALITY_SUCCESS, payload: { id } });
     } catch (err) {
       const errMsg = err.response?.data.message || 'Não foi possível excluir modalidade';
-      dispatch({ type: DELETE_MODALITY_ERROR, payload: { alertText: errMsg } });
+      dispatch({ type: actions.DELETE_MODALITY_ERROR, payload: { alertText: errMsg } });
     }
   };
 
+  //
   // PLANS
+  //
+
+  const addPlan = async (newPlan: IPlan) => {
+    dispatch({ type: actions.OPERATION_BEGIN });
+
+    try {
+      const res = await axiosInstance.post('/plans', newPlan);
+      const { plan } = res.data;
+      dispatch({ type: actions.ADD_NEW_PLAN_SUCCESS, payload: { plan } });
+    } catch (err) {
+      const errMsg = err.response?.data.message || 'Não foi possível criar plano';
+      dispatch({ type: actions.ADD_NEW_PLAN_ERROR, payload: { alertText: errMsg } });
+    }
+  };
+
+  const getPlans = async () => {
+    dispatch({ type: actions.OPERATION_BEGIN });
+
+    try {
+      const res = await axiosInstance.get('/plans');
+      const { plans } = res.data;
+      dispatch({ type: actions.GET_PLANS_SUCCESS, payload: { plans } });
+    } catch (err) {
+      const errMsg = err.response?.data.message || 'Não foi possível obter planos';
+      dispatch({ type: actions.GET_PLANS_ERROR, payload: { alertText: errMsg } });
+    }
+  };
+
+  const updatePlan = async (newPlan: IPlan) => {
+    dispatch({ type: actions.OPERATION_BEGIN });
+
+    try {
+      const res = await axiosInstance.patch(`/plans/${newPlan._id}`, newPlan);
+      const { plan } = res.data;
+      dispatch({ type: actions.UPDATE_PLAN_SUCCESS, payload: { plan } });
+    } catch (err) {
+      const errMsg = err.response?.data.message || 'Não foi possível editar plano';
+      dispatch({ type: actions.UPDATE_PLAN_ERROR, payload: { alertText: errMsg } });
+    }
+  };
+
+  const deletePlan = async (id: string) => {
+    dispatch({ type: actions.OPERATION_BEGIN });
+
+    try {
+      await axiosInstance.delete(`/modalities/${id}`);
+      dispatch({ type: actions.DELETE_PLAN_SUCCESS, payload: { id } });
+    } catch (err) {
+      const errMsg = err.response?.data.message || 'Não foi possível excluir plano';
+      dispatch({ type: actions.DELETE_PLAN_ERROR, payload: { alertText: errMsg } });
+    }
+  };
 
   const publicFunctions: IAppContextFunctions = {
     displayAlert,
     clearAlertNoDelay,
-    createCustomer,
     getCustomers,
     loginUser,
     verifyAuth,
@@ -229,6 +250,10 @@ const AppProvider = ({ children }) => {
     getModalities,
     updateModality,
     deleteModality,
+    addPlan,
+    getPlans,
+    updatePlan,
+    deletePlan,
   };
 
   return <AppContext.Provider value={{ ...state, ...publicFunctions }}>{children}</AppContext.Provider>;

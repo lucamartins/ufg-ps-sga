@@ -48,19 +48,6 @@ export const ClienteDetailed = () => {
             <div className='client__info__content__line-separator'></div>
 
             <div className='u-padding--1'>
-              <div className='client__info__content__box-2'>
-                <div className='client__info__content__box-2__label'>Dependentes:&nbsp;</div>
-                {customerTarget.filiates.length > 0 ? (
-                  customerTarget.filiates.map((dependente) => <div className='client__info__content__box-2__value'>{dependente.name}</div>)
-                ) : (
-                  <div className='client__info__content__box-2__value'>Não há</div>
-                )}
-              </div>
-            </div>
-
-            <div className='client__info__content__line-separator'></div>
-
-            <div className='u-padding--1'>
               <div className='client__info__content__actions'>
                 <Button kind='regular-btn' text='Editar' />
                 <Button kind='regular-btn-2' text='Resetar senha' />
