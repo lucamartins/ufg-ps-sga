@@ -247,12 +247,23 @@ export const reducer = (state, action) => {
   }
 
   if (action.type === actions.UPDATE_PLAN_SUCCESS) {
-    const newArr = state.plans.filter((plan) => plan._id !== action.payload.plan._id);
-    newArr.push(action.payload.plan);
+    let newArr = [...state.plans];
+
+    for (let i = 0; i < state.plans.length; i++) {
+      if (state.plans[i]._id === action.payload.plan._id) {
+        newArr[i] = action.payload.plan;
+      }
+    }
+
+    // const newArr = state.plans.filter((plan) => plan._id !== action.payload.plan._id);
+    // newArr.push(action.payload.plan);
 
     return {
       ...state,
       isLoading: false,
+      alertText: 'Plano atualizado',
+      alertType: 'success',
+      showAlert: true,
       plans: [...newArr],
     };
   }

@@ -1,18 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ListGroup, Container, Row, Col, Button, Modal, Form, InputGroup } from 'react-bootstrap';
+import { Container, Button, Modal, Form, InputGroup, Table } from 'react-bootstrap';
 import { useAppContext } from '../../../context';
 import { v4 as uuidv4 } from 'uuid';
 import { Alert, Loading } from '../../../components';
 import { IPlan } from '../../../types';
+import { FiSettings } from 'react-icons/fi';
+import { AiOutlineDelete } from 'react-icons/ai';
 
 const planInfoInitialState: IPlan = {
   _id: null,
   name: '',
   active: true,
   modality: '',
-  numberLessonsWeek: 2,
+  numberLessonsWeek: '',
   monthPrice: '',
-  monthDuration: 1,
+  monthDuration: '',
 };
 
 export const Planos = () => {
@@ -21,13 +23,14 @@ export const Planos = () => {
   const [planInfo, setPlanInfo] = useState(planInfoInitialState);
   const [modalTitle, setModalTitle] = useState('Cadastrar novo plano');
   const form = useRef(null);
-
   const { plans, getPlans, addPlan, updatePlan, deletePlan, modalities, getModalities } = useAppContext();
+  const [isFetched, setIsFetched] = useState(false);
 
   useEffect(() => {
     (async () => {
       await getPlans();
       await getModalities();
+      setIsFetched(true);
     })();
   }, []);
 
@@ -39,21 +42,10 @@ export const Planos = () => {
     }
   }, [showModal]);
 
-  const handleEdit = (e) => {
-    const planId = e.target.dataset.planId;
-    const plan = plans.find((plan) => plan._id === planId);
-
-    setModalTitle('Editar plano');
-    setPlanInfo({ ...plan });
-    setShowModal(true);
-  };
-
   const handleChange = (e) => {
     const target = e.target;
     const value = target.type === 'checkbox' ? target.checked : target.value;
     const name = target.name;
-
-    console.log(target, value, name);
 
     setPlanInfo((oldState) => ({
       ...oldState,
@@ -61,22 +53,21 @@ export const Planos = () => {
     }));
   };
 
-  const handleSave = async () => {
-    try {
-      if (planInfo._id) {
-        await updatePlan(planInfo);
-      } else {
-        await addPlan(planInfo);
-      }
-    } catch (err) {
-      console.error(err);
-    }
+  const handleEdit = (e) => {
+    const target = e.target;
+    const rowEl = target.closest('tr');
+    const planId = rowEl.dataset.documentId;
+    const plan = plans.find((plan) => plan._id === planId);
 
-    setShowModal(false);
+    setModalTitle('Editar plano');
+    setPlanInfo({ ...plan });
+    setShowModal(true);
   };
 
   const handleDelete = async (e) => {
-    const planId = e.target.dataset.planId;
+    const target = e.target;
+    const rowEl = target.closest('tr');
+    const planId = rowEl.dataset.documentId;
 
     try {
       await deletePlan(planId);
@@ -85,37 +76,48 @@ export const Planos = () => {
     }
   };
 
-  const item = (plan: IPlan) => (
-    <ListGroup.Item variant='primary' key={uuidv4()}>
-      <Container>
-        <Row className='p-1'>
-          <Col className='d-flex align-items-center'>{plan.name}</Col>
-          <Col className='d-flex align-items-center' style={plan.active ? { color: 'green' } : { color: 'red' }}>
-            {plan.active ? 'Ativo' : 'Inativo'}
-          </Col>
-          <Col className='d-flex justify-content-end'>
-            <Button variant='outline-danger' size='lg' data-modality-id={plan._id} onClick={handleDelete} className='me-2'>
-              Excluir
-            </Button>
-            <Button variant='dark' size='lg' data-modality-id={plan._id} onClick={handleEdit}>
-              Editar
-            </Button>
-          </Col>
-        </Row>
-      </Container>
-    </ListGroup.Item>
-  );
-
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
+    console.log(planInfo);
     if (form.current.checkValidity() === false) {
       event.preventDefault();
       event.stopPropagation();
+    } else {
+      if (planInfo._id) {
+        await updatePlan(planInfo);
+      } else {
+        await addPlan(planInfo);
+      }
+
+      setShowModal(false);
     }
 
     setValidated(true);
-
-    console.log(planInfo);
   };
+
+  const item = (plan: IPlan) => (
+    <tr key={uuidv4()} data-document-id={plan._id} className='align-middle'>
+      <td>{plan.name}</td>
+      <td style={plan.active ? { color: 'green' } : { color: 'red' }}>{plan.active ? 'sim' : 'não'}</td>
+      <td>{modalities.find((modality) => modality._id === plan.modality).name}</td>
+      <td>{plan.numberLessonsWeek}</td>
+      <td>{plan.monthPrice}</td>
+      <td>{plan.monthDuration}</td>
+      <td>
+        <div className='d-flex align-center justify-content-center'>
+          <FiSettings style={{ fontSize: '1.5rem', color: '#5e60ce', cursor: 'pointer' }} onClick={handleEdit} />
+        </div>
+      </td>
+      <td>
+        <div className='d-flex align-center justify-content-center'>
+          <AiOutlineDelete style={{ fontSize: '1.5rem', color: 'red', cursor: 'pointer' }} onClick={handleDelete} />
+        </div>
+      </td>
+    </tr>
+  );
+
+  if (!isFetched) return null;
+
+  console.log(plans, modalities);
 
   return (
     <Container>
@@ -126,7 +128,25 @@ export const Planos = () => {
       </Container>
 
       <Container className='my-4'>
-        <ListGroup numbered={true}>{plans.length === 0 ? 'Não há planos cadastrados.' : plans.map((plan) => item(plan))}</ListGroup>
+        {plans.length === 0 ? (
+          'Não há planos cadastrados'
+        ) : (
+          <Table variant='dark' hover striped bordered style={{ borderRadius: '8px', overflow: 'hidden' }}>
+            <thead style={{ color: '#29e7cd' }}>
+              <tr className='align-middle'>
+                <th>Nome</th>
+                <th>Ativo</th>
+                <th>Modalidade</th>
+                <th>Qnt. aulas por semana</th>
+                <th>Mensalidade (R$)</th>
+                <th>Duração (meses)</th>
+                <th>-</th>
+                <th>-</th>
+              </tr>
+            </thead>
+            <tbody>{plans.map((plan) => item(plan))}</tbody>
+          </Table>
+        )}
       </Container>
 
       <Container className=''>
@@ -141,6 +161,7 @@ export const Planos = () => {
         <Modal.Header closeButton={true}>
           <Modal.Title>{modalTitle}</Modal.Title>
         </Modal.Header>
+
         <Modal.Body>
           <Form ref={form} className='p-2 d-flex flex-column gap-4' noValidate validated={validated} onSubmit={handleSubmit}>
             <Form.Group controlId='formName'>
@@ -155,7 +176,7 @@ export const Planos = () => {
               {modalities && (
                 <Form.Select value={planInfo.modality} onChange={handleChange} name='modality' required>
                   <option disabled value=''>
-                    Escolha...
+                    Definir...
                   </option>
                   {modalities.map((modality) => (
                     <option key={uuidv4()} value={modality._id}>
@@ -168,7 +189,10 @@ export const Planos = () => {
 
             <Form.Group controlId='formLessonsWeek'>
               <Form.Label>Quantidade de aulas por semana</Form.Label>
-              <Form.Select value={planInfo.numberLessonsWeek} onChange={handleChange} name='numberLessonsWeek'>
+              <Form.Select value={planInfo.numberLessonsWeek} onChange={handleChange} name='numberLessonsWeek' required>
+                <option disabled value=''>
+                  Definir...
+                </option>
                 <option value='2'>2 aulas / semana</option>
                 <option value='3'>3 aulas / semana</option>
                 <option value='4'>4 aulas / semana</option>
@@ -178,7 +202,10 @@ export const Planos = () => {
 
             <Form.Group controlId='formDuration'>
               <Form.Label>Duração do plano em meses</Form.Label>
-              <Form.Select value={planInfo.monthDuration} onChange={handleChange} name='monthDuration'>
+              <Form.Select value={planInfo.monthDuration} onChange={handleChange} name='monthDuration' required>
+                <option disabled value=''>
+                  Definir...
+                </option>
                 <option value='1'>Mensal (1 mês)</option>
                 <option value='3'>Trimestral (3 meses)</option>
                 <option value='6'>Semestral (6 meses)</option>

@@ -3,7 +3,7 @@ export interface IPlan {
   name: string;
   active: boolean;
   modality: string;
-  numberLessonsWeek: number;
+  numberLessonsWeek: string;
   monthPrice: string;
-  monthDuration: number;
+  monthDuration: string;
 }

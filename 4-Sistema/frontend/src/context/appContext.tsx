@@ -230,7 +230,7 @@ const AppProvider = ({ children }) => {
     dispatch({ type: actions.OPERATION_BEGIN });
 
     try {
-      await axiosInstance.delete(`/modalities/${id}`);
+      await axiosInstance.delete(`/plans/${id}`);
       dispatch({ type: actions.DELETE_PLAN_SUCCESS, payload: { id } });
     } catch (err) {
       const errMsg = err.response?.data.message || 'Não foi possível excluir plano';

@@ -15,6 +15,10 @@ const PlanSchema = new Schema<IPlan>({
     type: String,
     required: true,
   },
+  active: {
+    type: Boolean,
+    required: true,
+  },
   modality: {
     type: Types.ObjectId,
     required: true,
