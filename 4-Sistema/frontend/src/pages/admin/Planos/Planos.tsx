@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { ListGroup, Container, Row, Col, Button, Modal, Form } from 'react-bootstrap';
+import React, { useState, useEffect, useRef } from 'react';
+import { ListGroup, Container, Row, Col, Button, Modal, Form, InputGroup } from 'react-bootstrap';
 import { useAppContext } from '../../../context';
 import { v4 as uuidv4 } from 'uuid';
 import { Alert, Loading } from '../../../components';
@@ -12,19 +12,22 @@ const planInfoInitialState: IPlan = {
   modality: '',
   numberLessonsWeek: 2,
   monthPrice: '',
-  numberMonths: 1,
+  monthDuration: 1,
 };
 
 export const Planos = () => {
   const [showModal, setShowModal] = useState(false);
+  const [validated, setValidated] = useState(false);
   const [planInfo, setPlanInfo] = useState(planInfoInitialState);
   const [modalTitle, setModalTitle] = useState('Cadastrar novo plano');
+  const form = useRef(null);
 
-  const { plans, getPlans, addPlan, updatePlan, deletePlan } = useAppContext();
+  const { plans, getPlans, addPlan, updatePlan, deletePlan, modalities, getModalities } = useAppContext();
 
   useEffect(() => {
     (async () => {
       await getPlans();
+      await getModalities();
     })();
   }, []);
 
@@ -32,6 +35,7 @@ export const Planos = () => {
     if (!showModal) {
       setModalTitle('Cadastrar novo plano');
       setPlanInfo(planInfoInitialState);
+      setValidated(false);
     }
   }, [showModal]);
 
@@ -48,6 +52,8 @@ export const Planos = () => {
     const target = e.target;
     const value = target.type === 'checkbox' ? target.checked : target.value;
     const name = target.name;
+
+    console.log(target, value, name);
 
     setPlanInfo((oldState) => ({
       ...oldState,
@@ -100,6 +106,17 @@ export const Planos = () => {
     </ListGroup.Item>
   );
 
+  const handleSubmit = (event) => {
+    if (form.current.checkValidity() === false) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    setValidated(true);
+
+    console.log(planInfo);
+  };
+
   return (
     <Container>
       <Container className=''>
@@ -125,30 +142,71 @@ export const Planos = () => {
           <Modal.Title>{modalTitle}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form className='p-2' onSubmit={(e) => e.preventDefault()}>
-            <Form.Group className='mb-3' controlId='formName'>
+          <Form ref={form} className='p-2 d-flex flex-column gap-4' noValidate validated={validated} onSubmit={handleSubmit}>
+            <Form.Group controlId='formName'>
               <Form.Label>Nome</Form.Label>
-              <Form.Control type='text' value={planInfo.name} name='name' onChange={handleChange}></Form.Control>
-              <Form.Text muted={true}>Nome curto e de fácil identificação.</Form.Text>
+              <Form.Control type='text' value={planInfo.name} name='name' onChange={handleChange} required></Form.Control>
+              <Form.Control.Feedback>Ótimo! :D</Form.Control.Feedback>
+              <Form.Control.Feedback type='invalid'>Que tal um nome curto e de fácil identificação?</Form.Control.Feedback>
+            </Form.Group>
+
+            <Form.Group controlId='formModality'>
+              <Form.Label>Modalidade</Form.Label>
+              {modalities && (
+                <Form.Select value={planInfo.modality} onChange={handleChange} name='modality' required>
+                  <option disabled value=''>
+                    Escolha...
+                  </option>
+                  {modalities.map((modality) => (
+                    <option key={uuidv4()} value={modality._id}>
+                      {modality.name}
+                    </option>
+                  ))}
+                </Form.Select>
+              )}
+            </Form.Group>
+
+            <Form.Group controlId='formLessonsWeek'>
+              <Form.Label>Quantidade de aulas por semana</Form.Label>
+              <Form.Select value={planInfo.numberLessonsWeek} onChange={handleChange} name='numberLessonsWeek'>
+                <option value='2'>2 aulas / semana</option>
+                <option value='3'>3 aulas / semana</option>
+                <option value='4'>4 aulas / semana</option>
+                <option value='5'>5 aulas / semana</option>
+              </Form.Select>
+            </Form.Group>
+
+            <Form.Group controlId='formDuration'>
+              <Form.Label>Duração do plano em meses</Form.Label>
+              <Form.Select value={planInfo.monthDuration} onChange={handleChange} name='monthDuration'>
+                <option value='1'>Mensal (1 mês)</option>
+                <option value='3'>Trimestral (3 meses)</option>
+                <option value='6'>Semestral (6 meses)</option>
+                <option value='12'>Anual (12 meses)</option>
+              </Form.Select>
+            </Form.Group>
+
+            <Form.Group controlId='formPrice'>
+              <Form.Label>Valor da mensalidade</Form.Label>
+              <InputGroup>
+                <InputGroup.Text>R$</InputGroup.Text>
+                <Form.Control required type='number' value={planInfo.monthPrice} onChange={handleChange} name='monthPrice'></Form.Control>
+                <Form.Control.Feedback>Perfeito!</Form.Control.Feedback>
+                <Form.Control.Feedback type='invalid'>É necessário também definir o valor</Form.Control.Feedback>
+              </InputGroup>
             </Form.Group>
 
             <Form.Group controlId='formActive'>
-              <Form.Check type='switch' label='Ativa' name='active' checked={planInfo.active} onChange={handleChange} />
+              <Form.Check type='switch' label='Ativo' name='active' checked={planInfo.active} onChange={handleChange} />
               <Form.Text muted={true}>Define se o plano está atualmente sendo ofertado</Form.Text>
             </Form.Group>
-            
-            <Form.Group controlId='formLessonsWeek'>
-              <Form.Label>Número de aulas por semana</Form.Label>
-              
-            </Form.Group>
-
           </Form>
         </Modal.Body>
         <Modal.Footer>
           <Button variant='seconday' onClick={() => setShowModal(false)} size='lg'>
             Cancelar
           </Button>
-          <Button variant='primary' onClick={handleSave} size='lg'>
+          <Button variant='primary' size='lg' onClick={handleSubmit}>
             Salvar
           </Button>
         </Modal.Footer>

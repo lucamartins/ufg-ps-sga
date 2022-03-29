@@ -5,5 +5,5 @@ export interface IPlan {
   modality: string;
   numberLessonsWeek: number;
   monthPrice: string;
-  numberMonths: number;
+  monthDuration: number;
 }
