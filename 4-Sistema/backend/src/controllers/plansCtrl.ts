@@ -20,7 +20,14 @@ class PlansController implements TCrudController {
   }
 
   async getAll(req: Request, res: Response): Promise<Response> {
-    const plans = await Plan.find({});
+    let plans;
+
+    if (req.userRole !== 'Admin') {
+      plans = await Plan.find({ active: true }, { customers: 0, active: 0 });
+    } else {
+      plans = await Plan.find({});
+    }
+
     return res.status(StatusCodes.OK).json({ plans });
   }
 

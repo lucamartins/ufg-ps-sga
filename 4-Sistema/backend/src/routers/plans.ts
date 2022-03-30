@@ -4,7 +4,7 @@ import { requireAuth, requireAdmin } from '../middlewares';
 
 const plansRouter = Router();
 
-plansRouter.route('/').all(requireAuth, requireAdmin).get(plansCtrl.getAll).post(plansCtrl.create);
-plansRouter.route('/:id').all(requireAuth, requireAdmin).get(plansCtrl.getOne).patch(plansCtrl.updateOne).delete(plansCtrl.deleteOne);
+plansRouter.route('/').all(requireAuth).get(plansCtrl.getAll).post(requireAdmin, plansCtrl.create);
+plansRouter.route('/:id').all(requireAuth).get(requireAdmin, plansCtrl.getOne).patch(plansCtrl.updateOne).delete(requireAdmin, plansCtrl.deleteOne);
 
 export { plansRouter };

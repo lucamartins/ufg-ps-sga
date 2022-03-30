@@ -117,8 +117,6 @@ export const Planos = () => {
 
   if (!isFetched) return null;
 
-  console.log(plans, modalities);
-
   return (
     <Container>
       <Container className=''>

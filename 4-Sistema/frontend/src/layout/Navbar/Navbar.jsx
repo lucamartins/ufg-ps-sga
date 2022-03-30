@@ -10,6 +10,8 @@ import { BsFillPeopleFill, BsCalendarCheck } from 'react-icons/bs';
 import { AiOutlineHome } from 'react-icons/ai';
 import { FaSwimmingPool } from 'react-icons/fa';
 
+import { DropdownButton } from 'react-bootstrap';
+
 const generateNavitem = (title, path, isHome) => {
   function genereateNavitemIcon() {
     const iconClassName = 'navbar__links__link__icon';
@@ -42,21 +44,14 @@ const generateNavitem = (title, path, isHome) => {
 
   if (isHome)
     return (
-      <NavLink
-        to={path.toLowerCase()}
-        className={({ isActive }) => (isActive ? 'navbar__links__link navbar__links__link--active' : 'navbar__links__link')}
-        end
-      >
+      <NavLink to={path.toLowerCase()} className={({ isActive }) => (isActive ? 'navbar__links__link navbar__links__link--active' : 'navbar__links__link')} end>
         {genereateNavitemIcon()}
         <div className='navbar__links__link__text'>{title}</div>
       </NavLink>
     );
 
   return (
-    <NavLink
-      to={path.toLowerCase()}
-      className={({ isActive }) => (isActive ? 'navbar__links__link navbar__links__link--active' : 'navbar__links__link')}
-    >
+    <NavLink to={path.toLowerCase()} className={({ isActive }) => (isActive ? 'navbar__links__link navbar__links__link--active' : 'navbar__links__link')}>
       {genereateNavitemIcon()}
       <div className='navbar__links__link__text'>{title}</div>
     </NavLink>
@@ -97,8 +92,17 @@ export const Navbar = () => {
 
         <div>
           <div className='navbar__footer'>
-            <BiLogOut className='navbar__footer__icon' title='Sair' onClick={() => logoutUser()} />
-            <MdOutlineAccountCircle className='navbar__footer__icon' />
+            {/* <BiLogOut className='navbar__footer__icon' title='Sair' onClick={() => logoutUser()} /> */}
+
+            <DropdownButton>
+              <DropdownButton.Toggle>
+                <MdOutlineAccountCircle className='navbar__footer__icon' />
+              </DropdownButton.Toggle>
+              <DropdownButton.Menu>
+                <DropdownButton.Item>Minha conta</DropdownButton.Item>
+                <DropdownButton.Item>Sair</DropdownButton.Item>
+              </DropdownButton.Menu>
+            </DropdownButton>
           </div>
         </div>
       </div>
@@ -125,8 +129,18 @@ export const Navbar = () => {
 
       <div>
         <div className='navbar__footer'>
-          <BiLogOut className='navbar__footer__icon' title='Sair' onClick={() => logoutUser()} />
-          <MdOutlineAccountCircle className='navbar__footer__icon' />
+          {/* <BiLogOut className='navbar__footer__icon' title='Sair' onClick={() => logoutUser()} />
+          <MdOutlineAccountCircle className='navbar__footer__icon' /> */}
+
+          <DropdownButton size='lg'>
+            <DropdownButton.Toggle style={{ backgroundColor: 'transparent', border: 'none' }}>
+              <MdOutlineAccountCircle className='navbar__footer__icon' />
+            </DropdownButton.Toggle>
+            <DropdownButton.Menu>
+              <DropdownButton.Item>Minha conta</DropdownButton.Item>
+              <DropdownButton.Item>Sair</DropdownButton.Item>
+            </DropdownButton.Menu>
+          </DropdownButton>
         </div>
       </div>
     </div>
