@@ -8,9 +8,9 @@ export const requireAuth = (req: Request, res: Response, next: NextFunction) => 
   if (!token) throw new UnauthenticatedError('Login is required');
 
   try {
-    const data = jwt.verify(token, process.env.JWT_SECRET!);
-    Object.defineProperty(req, 'userId', { enumerable: true, value: (data as TUserJwtPayload).userId });
-    Object.defineProperty(req, 'userRole', { enumerable: true, value: (data as TUserJwtPayload).userRole });
+    const { userAuth } = jwt.verify(token, process.env.JWT_SECRET!);
+    Object.defineProperty(req, 'userId', { enumerable: true, value: (userAuth as TUserJwtPayload).id });
+    Object.defineProperty(req, 'userRole', { enumerable: true, value: (userAuth as TUserJwtPayload).role });
   } catch (err) {
     throw new UnauthenticatedError('Login is required');
   }

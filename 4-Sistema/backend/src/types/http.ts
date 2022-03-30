@@ -1,9 +1,9 @@
 import { Request } from 'express';
 
-export type THttpRequestLoggedUser = Request & {
+export interface IReqAuth extends Request {
   userId: string;
-  userRole: string;
-};
+  userRole: 'Admin' | 'Customer';
+}
 
 export type TStripeRequest = Request & {
   rawBody: any;

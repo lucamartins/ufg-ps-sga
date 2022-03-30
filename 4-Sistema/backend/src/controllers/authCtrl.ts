@@ -19,7 +19,12 @@ class AuthorizationController implements TAuthController {
     const isPasswordCorrect = await bcrypt.compare(userPassword, user.password);
     if (!isPasswordCorrect) throw new AuthError('Credenciais de acesso inválidas ou conta não existente.');
 
-    const token = jwt.sign({ userId: user._id, userRole: user.__t }, process.env.JWT_SECRET!, { expiresIn: '7d' });
+    const returnData = {
+      id: user._id,
+      role: user.__t,
+    };
+
+    const token = jwt.sign({ userAuth: returnData }, process.env.JWT_SECRET!, { expiresIn: '7d' });
 
     return res
       .cookie('access_token', token, {
@@ -27,7 +32,7 @@ class AuthorizationController implements TAuthController {
         secure: process.env.NODE_ENV === 'production',
       })
       .status(StatusCodes.CREATED)
-      .json({ userId: user._id, userRole: user.__t });
+      .json({ userAuth: returnData });
   }
 
   async logout(req: Request, res: Response): Promise<Response> {
@@ -41,8 +46,8 @@ class AuthorizationController implements TAuthController {
 
     try {
       const data = jwt.verify(token, process.env.JWT_SECRET!);
-      const { userId, userRole } = data as TUserJwtPayload;
-      return res.status(StatusCodes.OK).json({ userId, userRole });
+      const { userAuth } = data as TUserJwtPayload;
+      return res.status(StatusCodes.OK).json({ userAuth });
     } catch (err) {
       console.error(err);
       throw new UnauthenticatedError('É necessário realizar login');

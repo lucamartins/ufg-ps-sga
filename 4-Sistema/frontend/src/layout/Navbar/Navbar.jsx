@@ -1,20 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './Navbar.scss';
 import { NavLink } from 'react-router-dom';
 import { useAppContext } from '../../context';
-
 import { BiTimeFive, BiSupport, BiLogOut } from 'react-icons/bi';
 import { CgGym } from 'react-icons/cg';
-import { MdAttachMoney, MdOutlineAccountCircle, MdOutlinePayments } from 'react-icons/md';
+import { MdAttachMoney, MdOutlineAccountCircle, MdOutlinePayments, MdOutlineManageAccounts } from 'react-icons/md';
 import { BsFillPeopleFill, BsCalendarCheck } from 'react-icons/bs';
 import { AiOutlineHome } from 'react-icons/ai';
 import { FaSwimmingPool } from 'react-icons/fa';
-
-import { DropdownButton } from 'react-bootstrap';
+import { Dropdown } from 'react-bootstrap';
+import { EditAccModal, Alert, Loading } from '../../components';
 
 const generateNavitem = (title, path, isHome) => {
   function genereateNavitemIcon() {
-    const iconClassName = 'navbar__links__link__icon';
+    const iconClassName = 'c-navbar__links__link__icon';
 
     switch (title.toLowerCase()) {
       case 'planos':
@@ -44,104 +43,109 @@ const generateNavitem = (title, path, isHome) => {
 
   if (isHome)
     return (
-      <NavLink to={path.toLowerCase()} className={({ isActive }) => (isActive ? 'navbar__links__link navbar__links__link--active' : 'navbar__links__link')} end>
+      <NavLink to={path.toLowerCase()} className={({ isActive }) => (isActive ? 'c-navbar__links__link c-navbar__links__link--active' : 'c-navbar__links__link')} end>
         {genereateNavitemIcon()}
-        <div className='navbar__links__link__text'>{title}</div>
+        <div className='c-navbar__links__link__text'>{title}</div>
       </NavLink>
     );
 
   return (
-    <NavLink to={path.toLowerCase()} className={({ isActive }) => (isActive ? 'navbar__links__link navbar__links__link--active' : 'navbar__links__link')}>
+    <NavLink to={path.toLowerCase()} className={({ isActive }) => (isActive ? 'c-navbar__links__link c-navbar__links__link--active' : 'c-navbar__links__link')}>
       {genereateNavitemIcon()}
-      <div className='navbar__links__link__text'>{title}</div>
+      <div className='c-navbar__links__link__text'>{title}</div>
     </NavLink>
   );
 };
 
 export const Navbar = () => {
-  const { user, logoutUser } = useAppContext();
-  if (!user) return null;
+  const { userAuth, logoutUser } = useAppContext();
+  const [showModal, setShowModal] = useState(false);
 
-  if (user.userRole !== 'Customer') {
+  const closeModal = () => setShowModal(false);
+  const openModal = () => setShowModal(true);
+
+  if (!userAuth) return null;
+
+  const footerDropDown = () => (
+    <Dropdown>
+      <Dropdown.Toggle variant='info' style={{ backgroundColor: 'transparent', border: 'none', color: '#fff' }}>
+        <MdOutlineAccountCircle className='c-navbar__footer__icon' />
+      </Dropdown.Toggle>
+      <Dropdown.Menu variant='dark' style={{ fontSize: '1.4rem' }}>
+        <Dropdown.Item className='d-flex gap-2 align-items-center' onClick={openModal}>
+          <MdOutlineManageAccounts />
+          <div>Minha conta</div>
+        </Dropdown.Item>
+        <Dropdown.Divider />
+        <Dropdown.Item className='d-flex gap-2 align-items-center' onClick={logoutUser}>
+          <BiLogOut />
+          <div>Sair</div>
+        </Dropdown.Item>
+      </Dropdown.Menu>
+    </Dropdown>
+  );
+
+  //
+  // Admin's navbar
+  //
+
+  if (userAuth.role === 'Admin') {
     return (
-      <div className='navbar'>
+      <div className='c-navbar'>
         <div>
-          <div className='navbar__title'>
-            Academia
+          <div className='c-navbar__title'>
+            SGA - Admin
             <br />
-            Dashboard - Admin
+            Dashboard
           </div>
 
-          <div className='navbar__links'>
+          <div className='c-navbar__links'>
             {generateNavitem('Início', '/', true)}
 
-            <div className='navbar__links__line-label'>Gerais</div>
+            <div className='c-navbar__links__line-label'>Gerais</div>
             {generateNavitem('Planos', '/planos')}
             {generateNavitem('Modalidades', '/modalidades')}
             {generateNavitem('Turmas', '/turmas')}
 
-            <div className='navbar__links__line-label'>Clientes</div>
+            <div className='c-navbar__links__line-label'>Clientes</div>
             {generateNavitem('Clientes', '/clientes')}
             {generateNavitem('Contratos', '/contratos')}
-            {/* {generateNavitem('Agendamentos', '/agendamentos')}
-
-            <div className='navbar__links__line-label'>Suporte</div>
-            {generateNavitem('Chamados', '/chamados')} */}
           </div>
         </div>
 
         <div>
-          <div className='navbar__footer'>
-            {/* <BiLogOut className='navbar__footer__icon' title='Sair' onClick={() => logoutUser()} /> */}
-
-            <DropdownButton>
-              <DropdownButton.Toggle>
-                <MdOutlineAccountCircle className='navbar__footer__icon' />
-              </DropdownButton.Toggle>
-              <DropdownButton.Menu>
-                <DropdownButton.Item>Minha conta</DropdownButton.Item>
-                <DropdownButton.Item>Sair</DropdownButton.Item>
-              </DropdownButton.Menu>
-            </DropdownButton>
-          </div>
+          <div className='c-navbar__footer'>{footerDropDown()}</div>
+          <EditAccModal showModal={showModal} closeModal={closeModal} />
         </div>
       </div>
     );
   }
 
+  //
+  // Customer's c-navbar
+  //
+
   return (
-    <div className='navbar'>
+    <div className='c-navbar'>
       <div>
-        <div className='navbar__title'>
-          Academia
+        <div className='c-navbar__title'>
+          SGA - Aluno
           <br />
-          Dashboard - Aluno
+          Dashboard
         </div>
 
-        <div className='navbar__links'>
+        <div className='c-navbar__links'>
           {generateNavitem('Início', '/', true)}
 
-          <div className='navbar__links__line-label'>Gerais</div>
+          <div className='c-navbar__links__line-label'>Gerais</div>
           {generateNavitem('Planos', '/aluno/planos')}
           {generateNavitem('Turmas', '/aluno/modalidades')}
         </div>
       </div>
 
       <div>
-        <div className='navbar__footer'>
-          {/* <BiLogOut className='navbar__footer__icon' title='Sair' onClick={() => logoutUser()} />
-          <MdOutlineAccountCircle className='navbar__footer__icon' /> */}
-
-          <DropdownButton size='lg'>
-            <DropdownButton.Toggle style={{ backgroundColor: 'transparent', border: 'none' }}>
-              <MdOutlineAccountCircle className='navbar__footer__icon' />
-            </DropdownButton.Toggle>
-            <DropdownButton.Menu>
-              <DropdownButton.Item>Minha conta</DropdownButton.Item>
-              <DropdownButton.Item>Sair</DropdownButton.Item>
-            </DropdownButton.Menu>
-          </DropdownButton>
-        </div>
+        <div className='c-navbar__footer'>{footerDropDown()}</div>
+        <EditAccModal showModal={showModal} closeModal={closeModal} />
       </div>
     </div>
   );

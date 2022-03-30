@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import './Login.scss';
 import { useNavigate, useLocation } from 'react-router-dom';
-import Logo2 from '../../../assets/ms-logo-2.png';
 import { useAppContext } from '../../../context';
 import { Alert, Loading } from '../../../components';
 import { SiOpenaigym } from 'react-icons/si';
 
 export const Login = () => {
-  const { user, loginUser } = useAppContext();
+  const { userAuth, loginUser } = useAppContext();
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -36,10 +35,10 @@ export const Login = () => {
   };
 
   useEffect(() => {
-    if (user) {
+    if (userAuth) {
       navigate(from, { replace: true });
     }
-  }, [user, from, navigate]);
+  }, [userAuth, from, navigate]);
 
   return (
     <div className='login'>
@@ -57,14 +56,7 @@ export const Login = () => {
             <label htmlFor='email' className='login__box__form-container__form__label'>
               Email
             </label>
-            <input
-              type='text'
-              placeholder='exemplo@email.com'
-              className='login__box__form-container__form__input'
-              id='email'
-              value={input.email}
-              onChange={handleInputChange}
-            />
+            <input type='text' placeholder='exemplo@email.com' className='login__box__form-container__form__input' id='email' value={input.email} onChange={handleInputChange} />
 
             <label htmlFor='password' className='login__box__form-container__form__label'>
               Senha

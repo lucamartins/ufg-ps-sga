@@ -3,6 +3,10 @@ export interface ICustomer {
   __t?: string;
   name: string;
   email: string;
-  phoneNumber: string;
-  contracts: string[];
+  phoneNumber?: string;
+}
+
+export interface IUserAuth {
+  id: string;
+  role: string;
 }

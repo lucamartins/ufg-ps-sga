@@ -1,7 +1,8 @@
 import { ICustomer, IPlan, IModality } from './';
 
 export interface IAppContextState {
-  user: { userId: string; userRole: string } | null;
+  userAuth: { id: string; role: string } | null;
+  user: { _id: string; __t: string; name: string; email: string; phoneNumber?: string } | null;
   isLoading: boolean;
   showAlert: boolean;
   alertText: string;
@@ -27,6 +28,8 @@ export interface IAppContextFunctions {
   getPlans: () => Promise<void>;
   updatePlan: (newPlan: IPlan) => Promise<void>;
   deletePlan: (id: string) => Promise<void>;
+  getUser: (id: string) => Promise<void>;
+  updateUser: (user: ICustomer) => Promise<void>;
 }
 
 export interface IAppContext extends IAppContextState, IAppContextFunctions {}

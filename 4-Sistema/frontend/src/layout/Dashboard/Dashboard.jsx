@@ -3,6 +3,7 @@ import { useAppContext } from '../../context';
 import { Outlet } from 'react-router-dom';
 import { Navbar } from '../';
 import './Dashboard.scss';
+import { Alert, Loading } from '../../components';
 
 export const Dashboard = () => {
   const {} = useAppContext();
@@ -16,6 +17,9 @@ export const Dashboard = () => {
       <div className='dashboard__rendered'>
         <Outlet />
       </div>
+
+      <Alert />
+      <Loading />
     </div>
   );
 };

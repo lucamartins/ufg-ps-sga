@@ -2,6 +2,7 @@ import { IAppContextState } from '../types';
 import actions from './actions';
 
 export const initialState: IAppContextState = {
+  userAuth: null,
   user: null,
   isLoading: false,
   showAlert: false,
@@ -72,12 +73,12 @@ export const reducer = (state, action) => {
   // Autenticacao
 
   if (action.type === actions.LOGIN_USER_SUCCESS) {
-    const { userId, userRole } = action.payload;
+    const { userAuth } = action.payload;
 
     return {
       ...state,
       isLoading: false,
-      user: { userId, userRole },
+      userAuth,
       alertText: action.payload.alertText,
       alertType: 'success',
       showAlert: true,
@@ -113,7 +114,9 @@ export const reducer = (state, action) => {
   }
 
   if (action.type === actions.VERIFY_AUTH_SUCCESS) {
-    return { ...state, isLoading: false, user: { userId: action.payload.userId, userRole: action.payload.userRole } };
+    const { userAuth } = action.payload;
+
+    return { ...state, isLoading: false, userAuth };
   }
 
   if (action.type === actions.VERIFY_AUTH_ERROR) {
@@ -298,6 +301,51 @@ export const reducer = (state, action) => {
       alertText: action.payload.alertText,
       alertType: 'error',
       showAlert: true,
+    };
+  }
+
+  // Users
+
+  if (action.type === actions.GET_USER_SUCCESS) {
+    const { customer } = action.payload;
+
+    return {
+      ...state,
+      isLoading: false,
+      user: customer,
+    };
+  }
+
+  if (action.type === actions.GET_USER_ERROR) {
+    return {
+      ...state,
+      isLoading: false,
+      alertText: 'Falha ao obter usuário',
+      alertType: 'error',
+      showAlert: true,
+    };
+  }
+
+  if (action.type === actions.UPDATE_USER_SUCCESS) {
+    const { newUserData } = action.payload;
+
+    return {
+      ...state,
+      user: newUserData,
+      alertText: 'Usuário atualizado',
+      alertType: 'success',
+      showAlert: true,
+      isLoading: false,
+    };
+  }
+
+  if (action.type === actions.UPDATE_USER_ERROR) {
+    return {
+      ...state,
+      alertText: 'Falha ao editar dados',
+      alertType: 'error',
+      showAlert: true,
+      isLoading: false,
     };
   }
 };

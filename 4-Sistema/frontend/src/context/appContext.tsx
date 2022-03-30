@@ -4,7 +4,7 @@ import { API_URL } from '../config/variables';
 import { IAppContext, IAppContextFunctions } from '../types';
 import actions from './actions';
 import { initialState, reducer } from './reducerAndState';
-import { IPlan } from '../types';
+import { IPlan, IUserAuth, ICustomer } from '../types';
 
 const AppContext = React.createContext<IAppContext>({} as IAppContext);
 
@@ -90,11 +90,12 @@ const AppProvider = ({ children }) => {
 
   const loginUser = async ({ email, password }) => {
     dispatch({ type: actions.OPERATION_BEGIN });
+    console.log('logando usuario');
 
     try {
       const res = await axiosInstance.post('/auth/login', { email, password });
-      const { userId, userRole } = res.data;
-      dispatch({ type: actions.LOGIN_USER_SUCCESS, payload: { userId, userRole, alertText: 'Usuário logado com sucesso!' } });
+      const { userAuth }: { userAuth: IUserAuth } = res.data;
+      dispatch({ type: actions.LOGIN_USER_SUCCESS, payload: { userAuth, alertText: 'Usuário logado com sucesso!' } });
     } catch (err) {
       const alertText = err.response.data?.message || 'Tente novamente mais tarde. Estamos passando por problemas no servidor :(';
       dispatch({ type: actions.LOGIN_USER_ERROR, payload: { alertText } });
@@ -107,9 +108,8 @@ const AppProvider = ({ children }) => {
 
     try {
       const res = await axiosInstance.get('/auth');
-      const { userId, userRole } = res.data;
-      console.log(userId, userRole);
-      dispatch({ type: actions.VERIFY_AUTH_SUCCESS, payload: { userId, userRole } });
+      const { userAuth } = res.data;
+      dispatch({ type: actions.VERIFY_AUTH_SUCCESS, payload: { userAuth } });
     } catch (err) {
       dispatch({ type: actions.VERIFY_AUTH_ERROR });
     }
@@ -238,6 +238,35 @@ const AppProvider = ({ children }) => {
     }
   };
 
+  //
+  // USER DETAILED
+  //
+
+  const getUser = async (id: string) => {
+    dispatch({ type: actions.OPERATION_BEGIN });
+
+    try {
+      const res = await axiosInstance.get(`/customers/${id}`);
+      const { customer } = res.data;
+      dispatch({ type: actions.GET_USER_SUCCESS, payload: { customer } });
+    } catch (err) {
+      console.error(err);
+      dispatch({ type: actions.GET_USER_ERROR });
+    }
+  };
+
+  const updateUser = async (user: ICustomer) => {
+    dispatch({ type: actions.OPERATION_BEGIN });
+
+    try {
+      const res = await axiosInstance.patch(`/customers/${user._id}`, user);
+      const { customer: newUserData } = res.data;
+      dispatch({ type: actions.UPDATE_USER_SUCCESS, payload: { newUserData } });
+    } catch (err) {
+      dispatch({ type: actions.UPDATE_USER_ERROR });
+    }
+  };
+
   const publicFunctions: IAppContextFunctions = {
     displayAlert,
     clearAlertNoDelay,
@@ -254,6 +283,8 @@ const AppProvider = ({ children }) => {
     getPlans,
     updatePlan,
     deletePlan,
+    getUser,
+    updateUser,
   };
 
   return <AppContext.Provider value={{ ...state, ...publicFunctions }}>{children}</AppContext.Provider>;

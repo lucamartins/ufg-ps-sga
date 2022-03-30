@@ -7,3 +7,4 @@ export * from './Table';
 export * from './Modal';
 export * from './ReturnPage';
 export * from './Card';
+export * from './EditAccModal';

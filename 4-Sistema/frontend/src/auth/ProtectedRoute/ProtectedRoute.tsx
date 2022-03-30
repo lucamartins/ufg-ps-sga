@@ -4,15 +4,15 @@ import { useAppContext } from '../../context';
 import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 
 export const ProtectedRoute = () => {
-  const { user } = useAppContext();
+  const { userAuth } = useAppContext();
   const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!user) {
+    if (!userAuth) {
       navigate('/login', { state: { from: location }, replace: true });
     }
-  }, [user]);
+  }, [userAuth]);
 
   return <Outlet />;
 };

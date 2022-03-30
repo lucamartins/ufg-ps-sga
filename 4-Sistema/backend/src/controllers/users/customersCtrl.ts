@@ -1,8 +1,8 @@
 import { StatusCodes } from 'http-status-codes';
 import { Customer } from '../../models';
-import { BadRequestError, NotFoundError } from '../../errors';
+import { BadRequestError, NotFoundError, UnauthorizedError } from '../../errors';
 import { Request, Response } from 'express';
-import { TCrudController } from '../../types';
+import { TCrudController, IReqAuth } from '../../types';
 // import { emailService } from '../../services';
 import { isReqEmptyBody } from '../../utils';
 import bcrypt from 'bcrypt';
@@ -50,26 +50,42 @@ class CustomersController implements TCrudController {
     return res.status(StatusCodes.OK).json({ customer });
   }
 
-  async updateOne(req: Request, res: Response): Promise<Response> {
+  async updateOne(req: IReqAuth, res: Response): Promise<Response> {
+    if (isReqEmptyBody(req.body)) throw new BadRequestError('Corpo da requisição vazio');
     const customerId = req.params.id;
-    let customer;
 
-    if (req.body.password) {
-      req.body.password = await bcrypt.hash('Effeludoucao132@', 12);
+    // define type of requester (admin or owner)
+    let requester;
+    (() => {
+      if (req.userRole === 'Admin') requester = 'admin';
+      else if (req.userId === customerId) requester = 'owner';
+      console.log(requester);
+    })();
+
+    if (!requester) throw new UnauthorizedError('Acesso a recurso não é permitido para o solicitante');
+
+    const { name, email, curPassword, changePassword, newPassword } = req.body;
+    const newUserData = changePassword ? { name, email, password: newPassword } : { name, email };
+    if (changePassword) newUserData.password = await bcrypt.hash(newUserData.password, 12);
+
+    const customer = await Customer.findById(customerId);
+    if (!customer) throw new NotFoundError(`Cliente com id ${customerId} não foi encontrado`);
+
+    // If the requester is the owner, password confirmation is mandatory
+    if (requester === 'owner') {
+      const isPasswordCorrect = await bcrypt.compare(curPassword, customer.password);
+      if (!isPasswordCorrect) throw new UnauthorizedError('Senha atual incorreta');
     }
+
+    let newCustomerDocument;
 
     try {
-      customer = await Customer.findByIdAndUpdate(customerId, req.body, {
-        new: true,
-        runValidators: true,
-      });
+      newCustomerDocument = await Customer.findByIdAndUpdate(customerId, newUserData, { new: true, runValidators: true });
     } catch (err) {
-      throw new BadRequestError('Incorrect ID data format passed in the request params');
+      throw new BadRequestError('Não foi possível alterar dados');
     }
 
-    if (!customer) throw new NotFoundError(`Customer with id ${customerId} was not found`);
-
-    return res.status(StatusCodes.CREATED).json({ customer });
+    return res.status(StatusCodes.CREATED).json({ customer: newCustomerDocument });
   }
 
   async deleteOne(req: Request, res: Response): Promise<Response> {
