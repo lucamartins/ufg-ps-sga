@@ -7,7 +7,6 @@ interface IPlan {
   numberLessonsWeek: number;
   monthPrice: number;
   monthDuration: number;
-  customers: Types.ObjectId[];
 }
 
 const PlanSchema = new Schema<IPlan>({
@@ -33,10 +32,6 @@ const PlanSchema = new Schema<IPlan>({
   },
   monthPrice: {
     type: Number,
-    required: true,
-  },
-  customers: {
-    type: [Types.ObjectId],
     required: true,
   },
 });

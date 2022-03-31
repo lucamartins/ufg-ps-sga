@@ -189,11 +189,14 @@ const AppProvider = ({ children }) => {
 
   const addPlan = async (newPlan: IPlan) => {
     dispatch({ type: actions.OPERATION_BEGIN });
+    delete newPlan._id;
 
     try {
       const res = await axiosInstance.post('/plans', newPlan);
       const { plan } = res.data;
+      console.log(res.data);
       dispatch({ type: actions.ADD_NEW_PLAN_SUCCESS, payload: { plan } });
+      console.log('plano adicionado no reducer', plan);
     } catch (err) {
       const errMsg = err.response?.data.message || 'Não foi possível criar plano';
       dispatch({ type: actions.ADD_NEW_PLAN_ERROR, payload: { alertText: errMsg } });
@@ -267,6 +270,37 @@ const AppProvider = ({ children }) => {
     }
   };
 
+  //
+  // MEMBERSHIPS
+  //
+
+  const getCustomerMemberships = async (userId) => {
+    dispatch({ type: actions.OPERATION_BEGIN });
+
+    try {
+      const res = await axiosInstance.get(`/memberships/user/${userId}`);
+      const { memberships } = res.data;
+      dispatch({ type: actions.GET_CUSTOMER_MEMBERSHIPS_SUCCESS, payload: { memberships } });
+    } catch (err) {
+      dispatch({ type: actions.GET_CUSTOMER_MEMBERSHIPS_ERROR });
+    }
+  };
+
+  const createCustomerMembership = async (customerId, planId) => {
+    dispatch({ type: actions.OPERATION_BEGIN });
+    console.log('Criar contrato...');
+
+    try {
+      const res = await axiosInstance.post(`/memberships`, { customerId, planId });
+      const { membership } = res.data;
+      dispatch({ type: actions.CREATE_CUSTOMER_MEMBERSHIP_SUCCESS, payload: { membership } });
+      console.log('criei...');
+    } catch (err) {
+      console.error(err);
+      dispatch({ type: actions.CREATE_CUSTOMER_MEMBERSHIP_ERROR });
+    }
+  };
+
   const publicFunctions: IAppContextFunctions = {
     displayAlert,
     clearAlertNoDelay,
@@ -285,6 +319,8 @@ const AppProvider = ({ children }) => {
     deletePlan,
     getUser,
     updateUser,
+    getCustomerMemberships,
+    createCustomerMembership,
   };
 
   return <AppContext.Provider value={{ ...state, ...publicFunctions }}>{children}</AppContext.Provider>;

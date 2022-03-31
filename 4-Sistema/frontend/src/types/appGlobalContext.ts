@@ -1,8 +1,9 @@
-import { ICustomer, IPlan, IModality } from './';
+import { ICustomer, IPlan, IModality, IMembership } from './';
 
 export interface IAppContextState {
   userAuth: { id: string; role: string } | null;
   user: { _id: string; __t: string; name: string; email: string; phoneNumber?: string } | null;
+  customerMemberships: IMembership[];
   isLoading: boolean;
   showAlert: boolean;
   alertText: string;
@@ -30,6 +31,8 @@ export interface IAppContextFunctions {
   deletePlan: (id: string) => Promise<void>;
   getUser: (id: string) => Promise<void>;
   updateUser: (user: ICustomer) => Promise<void>;
+  getCustomerMemberships: (userId: string) => Promise<void>;
+  createCustomerMembership: (customerId, planId) => Promise<void>;
 }
 
 export interface IAppContext extends IAppContextState, IAppContextFunctions {}

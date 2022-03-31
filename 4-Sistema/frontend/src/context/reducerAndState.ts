@@ -4,6 +4,7 @@ import actions from './actions';
 export const initialState: IAppContextState = {
   userAuth: null,
   user: null,
+  customerMemberships: [],
   isLoading: false,
   showAlert: false,
   alertText: '',
@@ -343,6 +344,48 @@ export const reducer = (state, action) => {
     return {
       ...state,
       alertText: 'Falha ao editar dados',
+      alertType: 'error',
+      showAlert: true,
+      isLoading: false,
+    };
+  }
+
+  // Memberships
+
+  if (action.type === actions.GET_CUSTOMER_MEMBERSHIPS_SUCCESS) {
+    return {
+      ...state,
+      isLoading: false,
+      customerMemberships: [...action.payload.memberships],
+    };
+  }
+
+  if (action.type === actions.GET_CUSTOMER_MEMBERSHIPS_ERROR) {
+    return {
+      ...state,
+      isLoading: false,
+      alertText: 'Falha ao obter dados do usuário',
+      alertType: 'error',
+      showAlert: true,
+      customerMemberships: [],
+    };
+  }
+
+  if (action.type === actions.CREATE_CUSTOMER_MEMBERSHIP_SUCCESS) {
+    return {
+      ...state,
+      alertText: 'Contrato criado',
+      alertType: 'success',
+      showAlert: true,
+      customerMemberships: [...state.customerMemberships, action.payload.membership],
+      isLoading: false,
+    };
+  }
+
+  if (action.type === actions.CREATE_CUSTOMER_MEMBERSHIP_ERROR) {
+    return {
+      ...state,
+      alertText: 'Falha na criação de contrato',
       alertType: 'error',
       showAlert: true,
       isLoading: false,

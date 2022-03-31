@@ -8,10 +8,11 @@ import { TCrudController } from '../types';
 class PlansController implements TCrudController {
   async create(req: Request, res: Response): Promise<Response> {
     if (isReqEmptyBody(req.body)) throw new BadRequestError('Corpo da requisição não pode ser vazio');
-    const plan = new Plan(req.body);
+
+    let plan = new Plan(req.body);
 
     try {
-      await plan.save();
+      plan = await plan.save();
     } catch (err) {
       throw new BadRequestError((err as Error).message);
     }

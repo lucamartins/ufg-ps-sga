@@ -9,7 +9,7 @@ import { BsFillPeopleFill, BsCalendarCheck } from 'react-icons/bs';
 import { AiOutlineHome } from 'react-icons/ai';
 import { FaSwimmingPool } from 'react-icons/fa';
 import { Dropdown } from 'react-bootstrap';
-import { EditAccModal, Alert, Loading } from '../../components';
+import { EditAccModal } from '../../components';
 
 const generateNavitem = (title, path, isHome) => {
   function genereateNavitemIcon() {
@@ -122,7 +122,7 @@ export const Navbar = () => {
   }
 
   //
-  // Customer's c-navbar
+  // Customer's navbar
   //
 
   return (
@@ -138,8 +138,9 @@ export const Navbar = () => {
           {generateNavitem('Início', '/', true)}
 
           <div className='c-navbar__links__line-label'>Gerais</div>
-          {generateNavitem('Planos', '/aluno/planos')}
-          {generateNavitem('Turmas', '/aluno/modalidades')}
+          {generateNavitem('Planos', '/alunos/planos')}
+          {generateNavitem('Turmas', '/alunos/modalidades')}
+          {generateNavitem('Contratos', '/alunos/contratos')}
         </div>
       </div>
 

@@ -8,7 +8,7 @@ import { FiSettings } from 'react-icons/fi';
 import { AiOutlineDelete } from 'react-icons/ai';
 
 const planInfoInitialState: IPlan = {
-  _id: null,
+  _id: '',
   name: '',
   active: true,
   modality: '',
@@ -59,8 +59,10 @@ export const Planos = () => {
     const planId = rowEl.dataset.documentId;
     const plan = plans.find((plan) => plan._id === planId);
 
-    setModalTitle('Editar plano');
+    console.log('plano no handle edit', plan);
+
     setPlanInfo({ ...plan });
+    setModalTitle('Editar plano');
     setShowModal(true);
   };
 

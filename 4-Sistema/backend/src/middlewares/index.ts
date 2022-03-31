@@ -4,3 +4,4 @@ export * from './requireAdmin';
 export * from './requireAuth';
 export * from './requireManager';
 export * from './requireAccess';
+export * from './requireOwnership';

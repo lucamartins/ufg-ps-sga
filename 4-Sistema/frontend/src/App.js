@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import './sass/_global.scss';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { Login, Signup, Clientes, ClienteDetailed, Modalidades, Planos } from './pages';
+import { Login, Signup, Clientes, ClienteDetailed, Modalidades, Planos, CustomerPlans, CustomerContracts } from './pages';
 import { Dashboard } from './layout';
 import { ProtectedRoute } from './auth';
 import { useAppContext } from './context';
@@ -22,8 +22,9 @@ const App = () => {
         <Route element={<ProtectedRoute />}>
           <Route path='/' element={<Dashboard />}>
             {/* Customer routes */}
-            <Route path='meus-planos' element={<Clientes />} />
-            <Route path='minhas-turmas' element={<Clientes />} />
+            <Route path='alunos/planos' element={<CustomerPlans />} />
+            <Route path='alunos/contratos' element={<CustomerContracts />} />
+            {/* <Route path='alunos/turmas' element={<Clientes />} /> */}
 
             {/* Admins-only routes */}
             <Route path='clientes' element={<Clientes />} />

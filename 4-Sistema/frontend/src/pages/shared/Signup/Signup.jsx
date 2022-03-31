@@ -21,7 +21,8 @@ export const Signup = ({ toggleToLogin }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const from = location.state?.from?.pathname || '/';
+  // const from = location.state?.from?.pathname || '/';
+  const from = '/';
 
   //
   // validateInput: (option?: { type: String }) => Boolean
