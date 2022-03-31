@@ -4,11 +4,11 @@
 
 import { Router } from 'express';
 import { modalitiesController } from '../controllers';
-import { requireAuth, requireAdmin } from '../middlewares';
+import { authRoute, requireAdmin } from '../middlewares';
 
 const modalitiesRouter = Router();
 
-modalitiesRouter.route('/').all(requireAuth).get(modalitiesController.getAll).post(modalitiesController.create);
-modalitiesRouter.route('/:id').all(requireAuth).get(modalitiesController.getOne).patch(modalitiesController.updateOne).delete(modalitiesController.deleteOne);
+modalitiesRouter.route('/').all(authRoute).get(modalitiesController.getAll).post(requireAdmin, modalitiesController.create);
+modalitiesRouter.route('/:id').all(authRoute, requireAdmin).get(modalitiesController.getOne).patch(modalitiesController.updateOne).delete(modalitiesController.deleteOne);
 
 export { modalitiesRouter };

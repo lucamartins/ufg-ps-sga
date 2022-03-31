@@ -1,26 +1,28 @@
 import { StatusCodes } from 'http-status-codes';
-import { Customer } from '../../models';
-import { BadRequestError, NotFoundError, UnauthorizedError } from '../../errors';
+import { Customer } from '../models';
+import { BadRequestError, NotFoundError, UnauthorizedError } from '../errors';
 import { Request, Response } from 'express';
-import { TCrudController, IReqAuth } from '../../types';
-// import { emailService } from '../../services';
-import { isReqEmptyBody } from '../../utils';
+import { TCrudController, IReqAuth } from '../types';
+import { emailService } from '../services';
+import { isReqEmptyBody } from '../utils';
 import bcrypt from 'bcrypt';
 
 class CustomersController implements TCrudController {
   async create(req: Request, res: Response): Promise<Response> {
     if (isReqEmptyBody(req.body)) throw new BadRequestError('Corpo da requisição com nome, email e senha deve ser fornecido');
 
-    req.body.password = await bcrypt.hash(req.body.password, 12);
+    const exists = await Customer.findOne({ email: req.body.email });
+    if (exists) throw new BadRequestError('Já existe uma conta cadastrada com esse endereço de email');
 
+    req.body.password = await bcrypt.hash(req.body.password, 12);
     const customer = new Customer(req.body);
 
     try {
       await customer.save();
-      // await emailService.sendEmail(customer.email, {
-      //   subject: 'Confirme sua conta',
-      //   text: `Olá, ${customer.name}, bem vindo a Mergulho Sports!\nClique no seguinte link para confirmar sua nova conta: https://www.mergulhosports.com`,
-      // });
+      await emailService.sendEmail(customer.email, {
+        subject: 'TESTE - Confirme sua conta',
+        text: `Olá, ${customer.name}, bem vindo ao SGA!\nClique no seguinte link para confirmar sua nova conta: link_teste_falso`,
+      });
     } catch (err) {
       console.log((err as Error).message);
       throw new BadRequestError((err as Error).message);

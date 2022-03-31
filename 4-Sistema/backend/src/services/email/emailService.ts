@@ -19,7 +19,7 @@ class EmailService {
       await this.transporter.verify();
 
       await this.transporter.sendMail({
-        from: 'contato@mergulhosports.com',
+        from: 'SGA - Suporte <contato@mergulhosports.com>',
         to: destination,
         subject: content.subject,
         text: content.text,

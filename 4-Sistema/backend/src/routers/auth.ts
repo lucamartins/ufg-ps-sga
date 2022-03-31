@@ -3,7 +3,6 @@
 //
 
 import { Router } from 'express';
-import { requireAuth } from '../middlewares';
 import { authorizationController } from '../controllers';
 
 const authRouter = Router();

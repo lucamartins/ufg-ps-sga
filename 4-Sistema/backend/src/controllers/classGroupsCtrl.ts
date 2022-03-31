@@ -5,7 +5,7 @@ import { isReqEmptyBody } from '../utils';
 import { Request, Response } from 'express';
 import { TCrudController } from '../types';
 
-class ClassGroupesController implements TCrudController {
+class ClassGroupsController implements TCrudController {
   async create(req: Request, res: Response): Promise<Response> {
     if (isReqEmptyBody(req.body)) throw new BadRequestError('Corpo da requisição é requerido');
     const classGroup = new ClassGroup(req.body);
@@ -73,4 +73,4 @@ class ClassGroupesController implements TCrudController {
   }
 }
 
-export const classGroupesController = new ClassGroupesController();
+export const classGroupsCtrl = new ClassGroupsController();

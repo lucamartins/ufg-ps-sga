@@ -1,7 +1,7 @@
 import { StatusCodes } from 'http-status-codes';
-import { Admin } from '../../models';
-import { BadRequestError, NotFoundError } from '../../errors';
-import { TCrudController } from '../../types';
+import { Admin } from '../models';
+import { BadRequestError, NotFoundError } from '../errors';
+import { TCrudController } from '../types';
 import { Request, Response } from 'express';
 
 class AdminsController implements TCrudController {
