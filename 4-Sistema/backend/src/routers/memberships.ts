@@ -8,7 +8,7 @@ import { authRoute, requireOwnership } from '../middlewares';
 
 const membershipsRouter = Router();
 
-membershipsRouter.route('/').all(authRoute, requireOwnership).post(membershipsCtrl.create);
+membershipsRouter.route('/').all(authRoute).post(membershipsCtrl.create);
 // membershipsRouter.route('/:id').all(authRoute).get(membershipsCtrl.getOne).patch(membershipsCtrl.updateOne).delete(membershipsCtrl.deleteOne);
 membershipsRouter.route('/user/:id').all(authRoute, requireOwnership).get(membershipsCtrl.getUserMemberships);
 

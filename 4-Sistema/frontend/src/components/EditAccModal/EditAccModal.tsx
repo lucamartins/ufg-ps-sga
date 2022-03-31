@@ -41,7 +41,6 @@ export const EditAccModal = ({ showModal, closeModal }) => {
   //
 
   const handleChange = (e) => {
-    console.log(e);
     const target = e.target;
     const propertyName = target.id;
     const value = target.type === 'checkbox' ? target.checked : target.value;
@@ -50,8 +49,6 @@ export const EditAccModal = ({ showModal, closeModal }) => {
       ...old,
       [propertyName]: value,
     }));
-
-    console.log(value);
   };
 
   const handleSubmit = async (event) => {
@@ -59,7 +56,6 @@ export const EditAccModal = ({ showModal, closeModal }) => {
       event.preventDefault();
       event.stopPropagation();
     } else {
-      console.log(input);
       await updateUser(input);
       closeModal();
     }
@@ -81,7 +77,7 @@ export const EditAccModal = ({ showModal, closeModal }) => {
         </Modal.Header>
 
         <Modal.Body>
-          <Form ref={form} className='d-flex gap-4 p-2 flex-column' onSubmit={handleSubmit} noValidate validated={formValidated} onKeyDown={(e) => console.log(e)}>
+          <Form ref={form} className='d-flex gap-4 p-2 flex-column' onSubmit={handleSubmit} noValidate validated={formValidated}>
             <Form.Group controlId='name'>
               <Form.Label>Nome</Form.Label>
               <Form.Control type='text' value={input.name} onChange={handleChange} required />

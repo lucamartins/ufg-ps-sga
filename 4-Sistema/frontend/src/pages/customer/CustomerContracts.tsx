@@ -58,9 +58,11 @@ export const CustomerContracts = () => {
 
       {/* Cards */}
       <Row xl='3' className='g-5'>
-        {customerMemberships.map((membership) => (
-          <Col key={uuidv4()}>{cardMembership(membership)}</Col>
-        ))}
+        {!customerMemberships.length ? (
+          <h1 style={{ fontSize: '1.8rem', marginTop: '5rem' }}>Você ainda não possui nenhum contrato com a academia :(</h1>
+        ) : (
+          customerMemberships.map((membership) => <Col key={uuidv4()}>{cardMembership(membership)}</Col>)
+        )}
       </Row>
     </Container>
   );
