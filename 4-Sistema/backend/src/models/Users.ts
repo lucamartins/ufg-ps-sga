@@ -12,11 +12,7 @@ interface IUser {
   __t: string;
 }
 
-interface ICustomer extends IUser {
-  contracts: Types.ObjectId[];
-}
-
-interface IManager extends IUser {}
+interface ICustomer extends IUser {}
 
 interface IAdmin extends IUser {}
 
@@ -44,18 +40,9 @@ const UserSchema = new Schema<IUser>({
   },
 });
 
-const CustomerSchema = new Schema<ICustomer>({
-  contracts: {
-    type: [Types.ObjectId],
-    required: true,
-  },
-});
-
-const ManagerSchema = new Schema<IManager>({});
-
+const CustomerSchema = new Schema<ICustomer>({});
 const AdminSchema = new Schema<IAdmin>({});
 
 export const User = model<IUser>('User', UserSchema);
 export const Customer = User.discriminator<ICustomer>('Customer', CustomerSchema);
-export const Manager = User.discriminator<IManager>('Manager', ManagerSchema);
 export const Admin = User.discriminator<IAdmin>('Admin', AdminSchema);

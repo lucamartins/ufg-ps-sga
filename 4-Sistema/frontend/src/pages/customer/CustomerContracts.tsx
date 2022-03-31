@@ -57,7 +57,7 @@ export const CustomerContracts = () => {
       </Row>
 
       {/* Cards */}
-      <Row xl='3' className='g-5'>
+      <Row xl='4' className='g-5'>
         {!customerMemberships.length ? (
           <h1 style={{ fontSize: '1.8rem', marginTop: '5rem' }}>Você ainda não possui nenhum contrato com a academia :(</h1>
         ) : (
