@@ -12,6 +12,7 @@ export const initialState: IAppContextState = {
   customers: [],
   modalities: [],
   plans: [],
+  classGroups: [],
 };
 
 export const reducer = (state, action) => {
@@ -308,12 +309,12 @@ export const reducer = (state, action) => {
   // Users
 
   if (action.type === actions.GET_USER_SUCCESS) {
-    const { customer } = action.payload;
+    const { user } = action.payload;
 
     return {
       ...state,
       isLoading: false,
-      user: customer,
+      user: user,
     };
   }
 
@@ -386,6 +387,52 @@ export const reducer = (state, action) => {
     return {
       ...state,
       alertText: 'Falha na criação de contrato',
+      alertType: 'error',
+      showAlert: true,
+      isLoading: false,
+    };
+  }
+
+  // Class Groups
+
+  if (action.type === actions.GET_CLASS_GROUPS_SUCCESS) {
+    const { classGroups } = action.payload;
+
+    return {
+      ...state,
+      classGroups: [...classGroups],
+      isLoading: false,
+    };
+  }
+
+  if (action.type === actions.GET_CLASS_GROUPS_ERROR) {
+    return {
+      ...state,
+      alertText: 'Falha ao obter turmas',
+      alertType: 'error',
+      showAlert: true,
+      isLoading: false,
+      classGroups: [],
+    };
+  }
+
+  if (action.type === actions.CREATE_CLASS_GROUP_SUCCESS) {
+    const { classGroup } = action.payload;
+
+    return {
+      ...state,
+      classGroups: [...state.classGroups, classGroup],
+      alertText: 'Turma criada',
+      alertType: 'success',
+      showAlert: true,
+      isLoading: false,
+    };
+  }
+
+  if (action.type === actions.CREATE_CLASS_GROUP_ERROR) {
+    return {
+      ...state,
+      alertText: 'Falha ao criar turma',
       alertType: 'error',
       showAlert: true,
       isLoading: false,

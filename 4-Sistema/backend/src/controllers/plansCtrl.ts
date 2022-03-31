@@ -1,5 +1,5 @@
 import { StatusCodes } from 'http-status-codes';
-import { Plan } from '../models';
+import { Plan, Membership } from '../models';
 import { BadRequestError, NotFoundError } from '../errors';
 import { isReqEmptyBody } from '../utils';
 import { Request, Response } from 'express';
@@ -69,13 +69,17 @@ class PlansController implements TCrudController {
     const planId = req.params.id;
     let plan;
 
+    // Ensure a plan will not be deleted if any user has it in the membership
+    const membershipsAssociated = await Membership.find({ planId });
+    if (membershipsAssociated.length) throw new BadRequestError('O plano possui contratos ativos e não pode ser excluído.');
+
     try {
       plan = await Plan.findByIdAndDelete(planId);
     } catch (err) {
       throw new BadRequestError('Incorrect ID data format passed in the request params');
     }
 
-    if (!plan) throw new NotFoundError(`plan with id ${planId} was not found`);
+    if (!plan) throw new NotFoundError(`Plano com ${planId} não foi encontrado no banco de dados.`);
 
     return res.status(StatusCodes.OK).json({ plan });
   }

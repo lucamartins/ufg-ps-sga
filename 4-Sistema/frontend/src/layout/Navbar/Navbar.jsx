@@ -103,13 +103,13 @@ export const Navbar = () => {
             {generateNavitem('Início', '/', true)}
 
             <div className='c-navbar__links__line-label'>Gerais</div>
-            {generateNavitem('Planos', '/planos')}
             {generateNavitem('Modalidades', '/modalidades')}
+            {generateNavitem('Planos', '/planos')}
             {generateNavitem('Turmas', '/turmas')}
 
             <div className='c-navbar__links__line-label'>Clientes</div>
             {generateNavitem('Clientes', '/clientes')}
-            {generateNavitem('Contratos', '/contratos')}
+            {/* {generateNavitem('Contratos', '/contratos')} */}
           </div>
         </div>
 
@@ -139,8 +139,8 @@ export const Navbar = () => {
 
           <div className='c-navbar__links__line-label'>Gerais</div>
           {generateNavitem('Planos', '/alunos/planos')}
-          {generateNavitem('Turmas', '/alunos/modalidades')}
           {generateNavitem('Contratos', '/alunos/contratos')}
+          {/* {generateNavitem('Turmas', '/alunos/modalidades')} */}
         </div>
       </div>
 

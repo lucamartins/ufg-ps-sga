@@ -28,17 +28,14 @@ export const Clientes = () => {
     <div className='alunos'>
       <div className='alunos__menu'>
         <SearchInput />
-        <Button kind='header-btn' icon={<RiAddFill />} text='Novo aluno' callback={() => setShowModalNovoCliente(true)} />
+        {/* <Button kind='header-btn' icon={<RiAddFill />} text='Novo aluno' callback={() => setShowModalNovoCliente(true)} /> */}
       </div>
       <div className='line-separator'></div>
       <h1 className='alunos__title'>Clientes cadastrados</h1>
-      {customers && (
-        <Table
-          titles={tableHeaders}
-          objectsArr={customers}
-          properties={['name', 'email', 'phoneNumber', 'memberships']}
-          onClickHandler={navigateToClienteDetailed}
-        />
+      {!customers.length ? (
+        <h4 style={{ marginTop: '4rem' }}>Ainda não há clientes cadastrados.</h4>
+      ) : (
+        <Table titles={tableHeaders} objectsArr={customers} properties={['name', 'email', 'phoneNumber', 'memberships']} onClickHandler={navigateToClienteDetailed} />
       )}
       <ModalNovoCliente showModal={showModalNovoCliente} closeModal={() => setShowModalNovoCliente(false)} />
       <Loading />

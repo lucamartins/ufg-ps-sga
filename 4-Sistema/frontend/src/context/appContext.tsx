@@ -4,7 +4,7 @@ import { API_URL } from '../config/variables';
 import { IAppContext, IAppContextFunctions } from '../types';
 import actions from './actions';
 import { initialState, reducer } from './reducerAndState';
-import { IPlan, IUserAuth, ICustomer } from '../types';
+import { IPlan, IUserAuth, ICustomer, IClassGroup } from '../types';
 
 const AppContext = React.createContext<IAppContext>({} as IAppContext);
 
@@ -249,9 +249,9 @@ const AppProvider = ({ children }) => {
     dispatch({ type: actions.OPERATION_BEGIN });
 
     try {
-      const res = await axiosInstance.get(`/customers/${id}`);
-      const { customer } = res.data;
-      dispatch({ type: actions.GET_USER_SUCCESS, payload: { customer } });
+      const res = await axiosInstance.get(`/users/${id}`);
+      const { user } = res.data;
+      dispatch({ type: actions.GET_USER_SUCCESS, payload: { user } });
     } catch (err) {
       console.error(err);
       dispatch({ type: actions.GET_USER_ERROR });
@@ -262,8 +262,8 @@ const AppProvider = ({ children }) => {
     dispatch({ type: actions.OPERATION_BEGIN });
 
     try {
-      const res = await axiosInstance.patch(`/customers/${user._id}`, user);
-      const { customer: newUserData } = res.data;
+      const res = await axiosInstance.patch(`/users/${user._id}`, user);
+      const { user: newUserData } = res.data;
       dispatch({ type: actions.UPDATE_USER_SUCCESS, payload: { newUserData } });
     } catch (err) {
       dispatch({ type: actions.UPDATE_USER_ERROR });
@@ -301,6 +301,41 @@ const AppProvider = ({ children }) => {
     }
   };
 
+  //
+  // CLASS GROUPS
+  //
+
+  const getClassGroups = async () => {
+    dispatch({ type: actions.OPERATION_BEGIN });
+
+    try {
+      const res = await axiosInstance.get('/classgroups');
+      const { classGroups } = res.data;
+      // console.log(classGroups);
+      dispatch({ type: actions.GET_CLASS_GROUPS_SUCCESS, payload: { classGroups } });
+    } catch (err) {
+      console.error(err);
+      dispatch({ type: actions.GET_CLASS_GROUPS_ERROR });
+    }
+  };
+
+  const createClassGroup = async (newClassGroup: IClassGroup) => {
+    dispatch({ type: actions.OPERATION_BEGIN });
+
+    try {
+      const res = await axiosInstance.post('/classgroups', newClassGroup);
+      const { classGroup } = res.data;
+      dispatch({ type: actions.CREATE_CLASS_GROUP_SUCCESS, payload: { classGroup: classGroup } });
+    } catch (err) {
+      console.error(err);
+      dispatch({ type: actions.CREATE_CLASS_GROUP_ERROR });
+    }
+  };
+
+  //
+  // Export
+  //
+
   const publicFunctions: IAppContextFunctions = {
     displayAlert,
     clearAlertNoDelay,
@@ -321,6 +356,8 @@ const AppProvider = ({ children }) => {
     updateUser,
     getCustomerMemberships,
     createCustomerMembership,
+    getClassGroups,
+    createClassGroup,
   };
 
   return <AppContext.Provider value={{ ...state, ...publicFunctions }}>{children}</AppContext.Provider>;

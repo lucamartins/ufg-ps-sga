@@ -14,7 +14,8 @@ interface IClassGroup {
   customers: Types.ObjectId[];
   maxCapacity: number;
   minAge: number;
-  maxAge: number;
+  maxAge?: number;
+  modalityId: Types.ObjectId;
 }
 
 const ClassGroupSchema = new Schema<IClassGroup>({
@@ -30,16 +31,20 @@ const ClassGroupSchema = new Schema<IClassGroup>({
     required: true,
     type: [Types.ObjectId],
   },
+  modalityId: {
+    required: true,
+    type: Types.ObjectId,
+  },
   maxCapacity: {
     required: true,
     type: Number,
   },
   minAge: {
-    required: true,
+    required: false,
     type: Number,
   },
   maxAge: {
-    required: true,
+    required: false,
     type: Number,
   },
 });

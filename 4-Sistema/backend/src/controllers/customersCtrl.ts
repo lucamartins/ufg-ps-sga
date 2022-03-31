@@ -1,5 +1,5 @@
 import { StatusCodes } from 'http-status-codes';
-import { Customer } from '../models';
+import { Customer, User } from '../models';
 import { BadRequestError, NotFoundError, UnauthorizedError } from '../errors';
 import { Request, Response } from 'express';
 import { TCrudController, IReqAuth } from '../types';
@@ -11,7 +11,8 @@ class CustomersController implements TCrudController {
   async create(req: Request, res: Response): Promise<Response> {
     if (isReqEmptyBody(req.body)) throw new BadRequestError('Corpo da requisição com nome, email e senha deve ser fornecido');
 
-    const exists = await Customer.findOne({ email: req.body.email });
+    const exists = await User.findOne({ email: req.body.email });
+    // console.log(exists);
     if (exists) throw new BadRequestError('Já existe uma conta cadastrada com esse endereço de email');
 
     req.body.password = await bcrypt.hash(req.body.password, 12);

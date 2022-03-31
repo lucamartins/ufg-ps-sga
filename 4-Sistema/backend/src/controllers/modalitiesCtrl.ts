@@ -1,5 +1,5 @@
 import { StatusCodes } from 'http-status-codes';
-import { Modality } from '../models';
+import { Modality, Plan } from '../models';
 import { BadRequestError, NotFoundError } from '../errors';
 import { isReqEmptyBody } from '../utils';
 import { Request, Response } from 'express';
@@ -60,6 +60,10 @@ class ModalitiesController implements TCrudController {
   async deleteOne(req: Request, res: Response): Promise<Response> {
     const modalityId = req.params.id;
     let modality;
+
+    // Ensure a modality will not be deleted if any plan uses it
+    const plansAssociated = await Plan.find({ modality: modalityId });
+    if (plansAssociated.length) throw new BadRequestError('A modalidade possui relação com planos ativos e não pode ser excluída.');
 
     try {
       modality = await Modality.findByIdAndDelete(modalityId);

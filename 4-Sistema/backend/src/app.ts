@@ -9,7 +9,7 @@ dotenv.config({
 });
 
 import { connectDb } from './db';
-import { adminsRouter, authRouter, customersRouter, modalitiesRouter, plansRouter, membershipsRouter } from './routers';
+import { adminsRouter, authRouter, customersRouter, modalitiesRouter, plansRouter, membershipsRouter, usersRouter, classGroupsRouter } from './routers';
 import { errorHandler, notFound } from './middlewares';
 import { addAdm } from './scripts';
 
@@ -36,6 +36,8 @@ app.use('/v1/customers', customersRouter);
 app.use('/v1/modalities', modalitiesRouter);
 app.use('/v1/plans', plansRouter);
 app.use('/v1/memberships', membershipsRouter);
+app.use('/v1/users', usersRouter);
+app.use('/v1/classgroups', classGroupsRouter);
 
 app.use(notFound);
 app.use(errorHandler);
